@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import FormSheet from './FormSheet'
 import { uid } from '../utils'
@@ -35,7 +36,7 @@ export default function ListSection({ title, hint, items, fields, onChange, rend
         ))}
         {!items.length && <p className="muted li">Nada por acá todavía.</p>}
       </div>
-      {sheet && <FormSheet {...sheet} fields={fields} onClose={() => setSheet(null)} />}
+      {sheet && createPortal(<FormSheet {...sheet} fields={fields} onClose={() => setSheet(null)} />, document.body)} {/* portal: dentro de la página animada, el panel "fixed" quedaba fuera de pantalla */}
     </section>
   )
 }

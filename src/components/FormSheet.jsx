@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 // fields: [{ name, label, type?: text|textarea|select|date|time|url, options?: [[value,label]], required? }]
 export default function FormSheet({ title, fields, initial = {}, onSave, onClose }) {
-  const [v, setV] = useState(initial)
+  const [v, setV] = useState(() => ({ ...Object.fromEntries(fields.filter((f) => f.type === 'select').map((f) => [f.name, f.options[0][0]])), ...initial }))
   const set = (name) => (e) => setV({ ...v, [name]: e.target.value })
   const submit = (e) => { e.preventDefault(); onSave(v); onClose() }
   return (
