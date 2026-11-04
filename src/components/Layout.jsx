@@ -28,7 +28,12 @@ export default function Layout() {
         </nav>
         <select className="me" value={me || ''} onChange={(e) => setMe(e.target.value || null)} aria-label="¿Quién sos?">
           <option value="">¿Quién sos?</option>
-          {data.members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+          {data.members.filter((m) => !m.guest).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+          {data.members.some((m) => m.guest) && (
+            <optgroup label="Invitados">
+              {data.members.filter((m) => m.guest).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+            </optgroup>
+          )}
         </select>
       </header>
       <main className="wrap"><Outlet /></main>
