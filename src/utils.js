@@ -11,7 +11,7 @@ export const mapLink = (b) =>
   b.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${b.address || b.zone || ''}`)}`
 
 // --- copia de seguridad ---
-const OPTIONAL = ['probable', 'quien']
+const OPTIONAL = ['probable', 'quien', 'log']
 const isObj = (x) => !!x && typeof x === 'object' && !Array.isArray(x)
 export const makeBackup = (data, me) => ({ app: 'the-perfect-night', version: 1, exportedAt: new Date().toISOString(), data, me })
 
@@ -31,7 +31,7 @@ export function parseBackup(text) {
   // hoy es opcional (copias viejas no lo traen)
   const h = d.hoy
   if (h !== undefined && !(isObj(h) && isObj(h.votes) && Array.isArray(h.previas) && h.previas.every((p) => isObj(p) && Array.isArray(p.votes)))) return { error: 'La votación de hoy está dañada.' }
-  return { data: { hoy: ref.hoy, probable: ref.probable, quien: ref.quien, ...d }, me: d.members.some((m) => m.id === b.me) ? b.me : null }
+  return { data: { hoy: ref.hoy, probable: ref.probable, quien: ref.quien, log: [], flama: {}, ...d }, me: d.members.some((m) => m.id === b.me) ? b.me : null }
 }
 
 // --- mensaje de WhatsApp ---
