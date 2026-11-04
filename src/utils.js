@@ -1,15 +1,12 @@
 import { seed } from './data/seed'
 
 export const uid = () => Math.random().toString(36).slice(2, 9)
-const ymd = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10)
-export const today = () => ymd(new Date()) // fecha LOCAL (con toISOString, de noche en Argentina ya sería "mañana")
-// La noche de "hoy" sigue hasta las 6am: a la 1am del domingo todavía es la noche del sábado.
-export const tonight = () => { const d = new Date(); if (d.getHours() < 6) d.setDate(d.getDate() - 1); return ymd(d) }
-export const fmtDate = (d) =>
-  new Date(d + 'T12:00').toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })
+export const today = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10) // fecha LOCAL (toISOString a secas daría "mañana" de noche en Argentina)
 export const who = (members, id) => members.find((m) => m.id === id)?.name ?? (String(id).startsWith('g_') ? 'Invitado' : '¿?')
-// Invitado: alguien ajeno al grupo que se suma a UNA noche. Se puede quitar después.
-export const newGuest = (name, nightId) => ({ id: 'g_' + uid(), name, nick: '', drink: '', guest: true, nightId })
+// Invitado: alguien ajeno al grupo que se suma por una salida. Se quita después.
+export const newGuest = (name) => ({ id: 'g_' + uid(), name, nick: '', drink: '', guest: true })
+// Los que van ganando (todos si hay empate); [] si nadie votó.
+export const winners = (items, count) => { const max = Math.max(0, ...items.map(count)); return max ? items.filter((i) => count(i) === max) : [] }
 export const mapLink = (b) =>
   b.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${b.address || b.zone || ''}`)}`
 
@@ -28,37 +25,18 @@ export function parseBackup(text) {
     if (!Array.isArray(d[k])) return { error: `Falta la sección "${k}" o está dañada.` }
     if (!d[k].every((i) => isObj(i) && typeof i.id === 'string')) return { error: `La sección "${k}" tiene elementos inválidos.` }
   }
-  const okNight = (n) => isObj(n.rsvp) && isObj(n.votes) && /^\d{4}-\d{2}-\d{2}$/.test(n.date) && typeof n.time === 'string' &&
-    Array.isArray(n.previas) && n.previas.every((p) => isObj(p) && Array.isArray(p.votes))
-  if (!d.nights.every(okNight)) return { error: 'Alguna noche tiene datos dañados.' }
-  if (!d.boliches.every((x) => Array.isArray(x.comments))) return { error: 'Algún boliche tiene datos dañados.' }
   if (!d.members.every((m) => typeof m.name === 'string')) return { error: 'Algún integrante tiene datos dañados.' }
-  // drinkVotes es opcional (copias viejas no lo traen)
-  if (d.drinkVotes !== undefined && !(isObj(d.drinkVotes) && Object.values(d.drinkVotes).every((a) => Array.isArray(a)))) return { error: 'Los votos de tragos están dañados.' }
-  return { data: { drinkVotes: {}, ...d }, me: d.members.some((m) => m.id === b.me) ? b.me : null }
+  // hoy es opcional (copias viejas no lo traen)
+  const h = d.hoy
+  if (h !== undefined && !(isObj(h) && isObj(h.votes) && Array.isArray(h.previas) && h.previas.every((p) => isObj(p) && Array.isArray(p.votes)))) return { error: 'La votación de hoy está dañada.' }
+  return { data: { hoy: ref.hoy, ...d }, me: d.members.some((m) => m.id === b.me) ? b.me : null }
 }
 
 // --- mensaje de WhatsApp ---
-export function nightMessage(night, data, url) {
-  const going = data.members.filter((m) => night.rsvp[m.id] === 'yes').map((m) => (m.guest ? `${m.name} (invitado)` : m.name))
-  const counts = data.boliches.map((b) => [b.name, Object.values(night.votes).filter((v) => v === b.id).length])
-  const max = Math.max(0, ...counts.map((c) => c[1]))
-  const top = max ? counts.filter((c) => c[1] === max).map((c) => c[0]) : []
-  const pmax = Math.max(0, ...night.previas.map((p) => p.votes.length))
-  const previa = !night.previas.length ? null
-    : pmax ? night.previas.filter((p) => p.votes.length === pmax).map((p) => p.place).join(' / ')
-    : `a votar (${night.previas.map((p) => p.place).join(', ')})`
-  const boliche = !top.length ? 'todavía sin votos' : night.closed ? top.join(' / ') : `${top.join(' / ')} (${top.length > 1 ? 'empate, por ahora' : 'va ganando'})`
-  return [
-    `🌙 ${night.title}`,
-    `📅 ${fmtDate(night.date)} · ${night.time} hs`,
-    night.zone ? `📍 ${night.zone}` : null,
-    previa ? `🍻 Previa: ${previa}` : null,
-    `🪩 Boliche: ${boliche}`,
-    `✅ Van${going.length ? ` (${going.length}): ${going.join(', ')}` : ': todavía nadie confirmó'}`,
-    night.notes ? `📝 ${night.notes}` : null,
-    '',
-    `Entrá a la app: ${url}`,
-    '(Resumen al momento de enviarlo. Cada uno ve y carga sus votos en su propio navegador: este mensaje no sincroniza nada.)',
-  ].filter((l) => l !== null).join('\n')
+export function hoyMessage(hoy, data, url) {
+  const p = winners(hoy.previas, (x) => x.votes.length).map((x) => x.place)
+  const b = winners(data.boliches, (x) => Object.values(hoy.votes).filter((v) => v === x.id).length).map((x) => x.name)
+  const f = (a) => (a.length ? a.join(' / ') + (a.length > 1 ? ' (empate)' : '') : 'a votar')
+  return ['🌙 the perfect night.', `🍻 Previa: ${f(p)}`, `🪩 Boliche: ${f(b)}`, '', `Votá en la app: ${url}`,
+    '(Por ahora cada uno ve los votos en su propio celu: este mensaje no los sincroniza.)'].join('\n')
 }
