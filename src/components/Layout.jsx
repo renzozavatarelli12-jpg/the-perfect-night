@@ -1,13 +1,10 @@
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
-import { Home, Flame, Disc3, Martini, Users } from 'lucide-react'
+import { Flame, Users } from 'lucide-react'
 import { useStore } from '../store'
 
 const tabs = [
-  ['/', 'Inicio', Home],
-  ['/hoy', 'Hoy', Flame],
-  ['/boliches', 'Boliches', Disc3],
-  ['/bebidas', 'Bebidas', Martini],
+  ['/', 'Hoy', Flame],
   ['/grupo', 'Grupo', Users],
 ]
 
