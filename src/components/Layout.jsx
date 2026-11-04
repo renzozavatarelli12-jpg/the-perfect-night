@@ -1,11 +1,12 @@
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
-import { Flame, Users } from 'lucide-react'
+import { Flame, Users, Gamepad2 } from 'lucide-react'
 import { useStore } from '../store'
 
 const tabs = [
   ['/', 'Hoy', Flame],
   ['/grupo', 'Grupo', Users],
+  ['/minijuegos', 'Minijuegos', Gamepad2],
 ]
 
 export default function Layout() {
