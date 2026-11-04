@@ -1,5 +1,6 @@
 // Contenido inicial del grupo. Lo marcado "de ejemplo" es ficticio; el resto sale del chat y de lo que confirmó el grupo.
 // Se puede editar desde la web, o acá y tocando "Restaurar datos de ejemplo" en Grupo.
+const BASE = import.meta.env?.BASE_URL ?? '/'
 export const seed = () => ({
   members: [
     { id: 'm1', name: 'Renzo', nick: 'Ren', drink: '' },
@@ -27,6 +28,8 @@ export const seed = () => ({
       desc: '+21. Descontracturado, estilo peña moderna: folklore en vivo, cachengue y hits argentinos. Suele haber promos de entrada con tragos.', comments: [] },
     { id: 'b4', name: 'Tamarisco', zone: 'Recoleta', address: 'Pres. José Evaristo Uriburu 1073', mapUrl: '', photo: '',
       desc: 'Más rústico e informal que los Cruza: folklore, música en vivo y baile. Opiniones mixtas sobre organización y seguridad.', comments: [] },
+    { id: 'b5', name: 'Argento', zone: 'Recoleta', address: 'Ayacucho 920, Recoleta', mapUrl: '', photo: `${BASE}boliches/argento.jpg`,
+      desc: 'Dos noches en una: primero peña con folklore en vivo y artistas invitados, después boliche con DJs, cachengue y pista. Entrada de referencia $6.000 (30/10 y 5/11 de 2026), puede variar. Algunas fechas de 22:30 a 6:00.', comments: [] },
   ],
   favDrinks: [
     { id: 'd1', name: 'Fernet con coca', note: 'El clásico de siempre.' },
