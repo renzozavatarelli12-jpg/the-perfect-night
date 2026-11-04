@@ -45,13 +45,14 @@ function Backup() {
 export default function Grupo() {
   const { data, update, reset } = useStore()
   const set = (k) => (v) => update(k, v)
-  const memberOpts = data.members.map((m) => [m.id, m.name])
+  const fixed = data.members.filter((m) => !m.guest)
+  const memberOpts = fixed.map((m) => [m.id, m.name])
   return (
     <>
       <h1>El grupo</h1>
       <p className="lead">Todo lo que nadie de afuera entendería.</p>
 
-      <ListSection title="Integrantes y apodos" addLabel="Sumar integrante" items={data.members} onChange={set('members')}
+      <ListSection title="Integrantes y apodos" addLabel="Sumar integrante" items={fixed} onChange={(v) => update('members', (ms) => [...v, ...ms.filter((m) => m.guest)])}
         fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'nick', label: 'Apodo' }, { name: 'drink', label: 'Lo que toma' }]}
         render={(m) => <div className="row"><b>{m.name}</b>{m.nick && <span className="tag">{m.nick}</span>}</div>} />
 
@@ -61,15 +62,6 @@ export default function Grupo() {
       <ListSection title="Frases típicas" items={data.phrases} onChange={set('phrases')}
         fields={[{ name: 'text', label: 'La frase', required: true }, { name: 'by', label: '¿Quién la dice?', type: 'select', options: memberOpts }]}
         render={(f) => <>{f.text}<div className="muted small">— {who(data.members, f.by)}</div></>} />
-
-      <ListSection title="Rankings" addLabel="Nuevo ranking" items={data.rankings} onChange={set('rankings')}
-        fields={[{ name: 'title', label: 'Título', required: true }, { name: 'items', label: 'Posiciones (una por línea, del 1° al último)', type: 'textarea' }]}
-        render={(r) => (
-          <><b>{r.title}</b>
-            <ol className="muted small" style={{ paddingLeft: 18, marginTop: 4 }}>
-              {(r.items || '').split('\n').filter(Boolean).map((x, i) => <li key={i}>{x}</li>)}
-            </ol></>
-        )} />
 
       <ListSection title="Estadísticas absurdas" addLabel="Nueva estadística" items={data.stats} onChange={set('stats')}
         fields={[{ name: 'value', label: 'Número', required: true }, { name: 'label', label: 'Qué mide', required: true }]}

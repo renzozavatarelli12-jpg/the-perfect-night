@@ -4,7 +4,9 @@ export const uid = () => Math.random().toString(36).slice(2, 9)
 export const today = () => new Date().toISOString().slice(0, 10)
 export const fmtDate = (d) =>
   new Date(d + 'T12:00').toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })
-export const who = (members, id) => members.find((m) => m.id === id)?.name ?? '¿?'
+export const who = (members, id) => members.find((m) => m.id === id)?.name ?? (String(id).startsWith('g_') ? 'Invitado' : '¿?')
+// Invitado: alguien ajeno al grupo que se suma a UNA noche. Se puede quitar después.
+export const newGuest = (name, nightId) => ({ id: 'g_' + uid(), name, nick: '', drink: '', guest: true, nightId })
 export const mapLink = (b) =>
   b.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${b.address || b.zone || ''}`)}`
 
@@ -35,7 +37,7 @@ export function parseBackup(text) {
 
 // --- mensaje de WhatsApp ---
 export function nightMessage(night, data, url) {
-  const going = data.members.filter((m) => night.rsvp[m.id] === 'yes').map((m) => m.name)
+  const going = data.members.filter((m) => night.rsvp[m.id] === 'yes').map((m) => (m.guest ? `${m.name} (invitado)` : m.name))
   const counts = data.boliches.map((b) => [b.name, Object.values(night.votes).filter((v) => v === b.id).length])
   const max = Math.max(0, ...counts.map((c) => c[1]))
   const top = max ? counts.filter((c) => c[1] === max).map((c) => c[0]) : []

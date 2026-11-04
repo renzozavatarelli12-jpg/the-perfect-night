@@ -17,7 +17,7 @@ export default function Home() {
       <div>
         <Moon className="moon" size={32} />
         <h1 className="big" style={{ marginTop: 18 }}>the perfect<br />night<i>.</i></h1>
-        <p className="lead">Solo para nosotros. Si no sos del grupo, ¿cómo llegaste hasta acá?</p>
+        <p className="lead">Solo para nosotros.</p>
         <div className="row" style={{ marginTop: 24 }}>
           <Link to="/noches/nueva" className="btn"><Plus size={16} /> Armar una noche</Link>
         </div>

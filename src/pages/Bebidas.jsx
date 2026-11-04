@@ -78,7 +78,7 @@ export default function Bebidas() {
         fields={[{ name: 'name', label: 'Bebida', required: true }, { name: 'note', label: 'Comentario' }]}
         render={(d) => <><b>{d.name}</b><div className="muted small">{d.note}</div></>} />
 
-      <ListSection title="Qué toma cada uno" items={data.members} onChange={(v) => update('members', v)}
+      <ListSection title="Qué toma cada uno" items={data.members.filter((m) => !m.guest)} onChange={(v) => update('members', (ms) => [...v, ...ms.filter((m) => m.guest)])}
         canAdd={false} canDelete={false} hint="Los integrantes se agregan en Grupo."
         fields={[{ name: 'drink', label: 'Lo que suele tomar' }]}
         render={(m) => <div className="row"><b className="grow">{m.name}</b><span className="muted">{m.drink || '—'}</span></div>} />

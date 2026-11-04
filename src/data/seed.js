@@ -58,7 +58,6 @@ export const seed = () => ({
   ],
   jokes: [
     { id: 'j1', text: 'Dea: lo que se tira después de un chiste.' },
-    { id: 'j2', text: 'Papa Z entró y salió del grupo 15 veces el mismo día (20/1/2022).' },
     { id: 'j3', text: 'Los comunicados oficiales de Renzo: “No es juntada. No es ocio. Es inversión en capital humano.”' },
     { id: 'j4', text: 'FLAMA: así se llama el grupo desde que Joaco lo bautizó en 2022.' },
   ],
@@ -70,16 +69,9 @@ export const seed = () => ({
     { id: 'f5', text: '“Yo toy.”', by: 'm5' },
     { id: 'f6', text: '“¿Qué hacen?”', by: 'm3' },
   ],
-  rankings: [
-    { id: 'r1', title: 'Reyes del audio', items: 'Joaco\nRenzo\nSofi' },
-    { id: 'r2', title: 'Los fotógrafos', items: 'Renzo\nJoaco\nEmi' },
-    { id: 'r3', title: 'Los búhos (mensajes de madrugada)', items: 'Renzo\nJoaco\nSofi' },
-    { id: 'r4', title: 'La risa oficial', items: 'Joaco\nEmi\nSofi' },
-  ],
   stats: [
-    { id: 's1', label: 'Veces que Papa Z salió del grupo en un solo día', value: '15' },
-    { id: 's2', label: 'Mensajes el día récord (6/1/2022)', value: '962' },
-    { id: 's3', label: 'Mensajes en el chat, aproximadamente', value: '15.700' },
+    { id: 's1', label: 'Mensajes el día récord (6/1/2022)', value: '962' },
+    { id: 's2', label: 'Mensajes en el chat, aproximadamente', value: '15.700' },
   ],
   stories: [
     { id: 'a1', title: 'Nace el grupo', date: '2021-12-26',

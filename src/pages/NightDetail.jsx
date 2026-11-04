@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { MessageCircle, Trash2, Plus, Trophy, MapPin, Clock, Lock, Unlock } from 'lucide-react'
 import { useStore } from '../store'
-import { fmtDate, uid, who, nightMessage } from '../utils'
+import { fmtDate, uid, who, nightMessage, newGuest } from '../utils'
 import ShareSheet from '../components/ShareSheet'
 
 const RSVP = [['yes', 'Voy'], ['maybe', 'Capaz'], ['no', 'No voy']]
@@ -13,10 +13,29 @@ export default function NightDetail() {
   const { data, update, me, setMe } = useStore()
   const [sharing, setSharing] = useState(false)
   const [previa, setPrevia] = useState('')
+  const [guestName, setGuestName] = useState('')
+  const [guestErr, setGuestErr] = useState('')
   const night = data.nights.find((n) => n.id === id)
 
   if (!night) return <p>Esa noche no existe (o la borraron). <Link to="/noches" className="tag">Volver</Link></p>
 
+  const here = data.members.filter((m) => !m.guest || m.nightId === id)
+  const joinAsGuest = (e) => {
+    e.preventDefault()
+    const name = guestName.trim()
+    if (!name) return
+    const same = (m) => m.name.toLowerCase() === name.toLowerCase()
+    if (data.members.some((m) => !m.guest && same(m))) return setGuestErr('Ese nombre es de alguien del grupo: elegite arriba.')
+    const g = here.find((m) => m.guest && same(m)) || newGuest(name, id)
+    if (!data.members.includes(g)) update('members', (ms) => [...ms, g])
+    setMe(g.id); setGuestName(''); setGuestErr('')
+  }
+  const removeGuest = (g) => {
+    if (!window.confirm(`¿Quitar a ${g.name}? Sus votos y confirmación de esta noche se mantienen.`)) return
+    if (me === g.id) setMe(null)
+    update('members', (ms) => ms.filter((m) => m.id !== g.id))
+    update('drinkVotes', (v) => Object.fromEntries(Object.entries(v).filter(([k]) => k !== g.id)))
+  }
   const patch = (fn) => update('nights', (ns) => ns.map((n) => (n.id === id ? fn(n) : n)))
   const toggle = (arr, x) => (arr.includes(x) ? arr.filter((y) => y !== x) : [...arr, x])
   const tally = data.boliches.map((b) => ({ b, n: Object.values(night.votes).filter((v) => v === b.id).length }))
@@ -42,24 +61,31 @@ export default function NightDetail() {
         <section className="sec">
           <h2>¿Quién sos?</h2>
           <div className="row" style={{ marginTop: 10 }}>
-            {data.members.map((m) => <button key={m.id} className="pill" onClick={() => setMe(m.id)}>{m.name}</button>)}
+            {here.map((m) => <button key={m.id} className="pill" onClick={() => setMe(m.id)}>{m.name}{m.guest ? ' (invitado)' : ''}</button>)}
           </div>
         </section>
       )}
 
       <section className="sec">
         <div className="sec-h"><h2>Asistencia</h2><span className="tag">{going} confirmados</span></div>
-        {data.members.map((m) => (
+        {here.map((m) => (
           <div className="li" key={m.id}>
-            <span className="grow">{m.name}{m.id === me && <span className="muted"> (vos)</span>}</span>
+            <span className="grow">{m.name}{m.guest && <span className="tag" style={{ marginLeft: 8 }}>invitado</span>}{m.id === me && <span className="muted"> (vos)</span>}</span>
             <div className="row" style={{ gap: 6 }}>
               {RSVP.map(([val, label]) => (
                 <button key={val} disabled={m.id !== me} className={`pill ${night.rsvp[m.id] === val ? 'on' : ''}`}
                   onClick={() => patch((n) => ({ ...n, rsvp: { ...n.rsvp, [me]: n.rsvp[me] === val ? null : val } }))}>{label}</button>
               ))}
             </div>
+            {m.guest && <button className="ib" aria-label="Quitar invitado" onClick={() => removeGuest(m)}><Trash2 size={15} /></button>}
           </div>
         ))}
+        <form className="add" onSubmit={joinAsGuest}>
+          <input value={guestName} onChange={(e) => { setGuestName(e.target.value); setGuestErr('') }} placeholder="¿Sos invitado? Poné tu nombre" />
+          <button className="btn sm">Entrar como invitado</button>
+        </form>
+        {guestErr && <p className="small err" role="alert" style={{ marginTop: 8 }}>{guestErr}</p>}
+        <p className="muted small" style={{ marginTop: 8 }}>Los invitados votan solo en esta noche y se quitan después con el tacho.</p>
       </section>
 
       <section className="sec">
