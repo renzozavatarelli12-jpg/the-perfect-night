@@ -10,7 +10,7 @@ export const KINDS = [
 // Los 4 rankings. k = estadística que mide.
 export const RANKS = [
   { k: 'cubatas', icon: '🍹', title: 'El Alcohólico', desc: 'Más cubatas' },
-  { k: 'besos', icon: '💋', title: 'El Ganador', desc: 'Más besos' },
+  { k: 'besos', icon: '💋', title: 'El MVP', desc: 'Más besos' },
   { k: 'salidas', icon: '🌙', title: 'El Senior de la Noche', desc: 'Más salidas' },
   { k: 'boliches', icon: '🪩', title: 'RR. PP. de la Noche', desc: 'Más boliches visitados' },
 ]
