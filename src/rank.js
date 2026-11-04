@@ -17,7 +17,6 @@ export const RANKS = [
 // Logros: se desbloquean solos al llegar a goal de la estadística k. dif = qué tan difícil es (para "el más difícil del año").
 // "El último en pie" (3 afters) no está: todavía no se registran afters.
 export const LOGROS = [
-  { id: 'don-juan', icon: '😘', name: 'Don Juan', k: 'besos', goal: 10, dif: 1 },
   { id: 'leyenda', icon: '👑', name: 'Leyenda en vida', k: 'salidas', goal: 20, dif: 2 },
   { id: 'higado', icon: '🫀', name: 'Hígado de titanio', k: 'cubatas', goal: 50, dif: 3 },
 ]
