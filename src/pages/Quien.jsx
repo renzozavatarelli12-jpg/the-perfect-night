@@ -68,11 +68,11 @@ export default function Quien() {
     const answers = [...R.answers]; answers[i] = text.trim(); setR({ ...R, answers })
     i + 1 < n ? go('hand', i + 1) : go('vhand')
   }
-  const vlist = R ? R.order.filter((a) => a !== i) : []
+  const vlist = R ? R.order.filter((a) => a !== i && R.t[a] !== i) : [] // no votás tus respuestas ni las que te imitan a vos
   const confirmVotes = () => {
     const votes = R.votes.map((v, k) => (k === i ? picks : v))
     if (i + 1 < n) { setR({ ...R, votes }); return go('vhand', i + 1) }
-    const res = tally(n, votes)
+    const res = tally(n, votes, R.t)
     setAdd(res.pts); setScores(scores.map((s, k) => s + res.pts[k]))
     setR({ ...R, votes, res }); go('reveal')
   }
@@ -87,7 +87,7 @@ export default function Quien() {
     <div className="qq-stage">
       <div className="qq-emoji">🎭</div>
       <h1 className="qq-title">¿Quién es quién?</h1>
-      <p className="qq-sub">Imitá a otro del grupo. Los demás adivinan quién escribió cada respuesta.</p>
+      <p className="qq-sub">Respondé como si fueras otro del grupo. Los demás adivinan a quién estás imitando.</p>
       <button className="qq-btn" disabled={!data.quien.length} onClick={() => go('players')}>Empezar partida</button>
     </div>
   )
@@ -134,14 +134,14 @@ export default function Quien() {
   )
   else if (ph === 'vote') body = (
     <div className="qq-stage">
-      <h2 className="qq-h">{names[i].split(' ')[0]}, ¿quién escribió cada una?</h2>
+      <h2 className="qq-h">{names[i].split(' ')[0]}, ¿a quién imita cada uno?</h2>
       <p className="qq-sub">{R.q.text}</p>
       {vlist.map((a, k) => (
         <div className="qq-card" key={a}>
-          <div style={{ fontWeight: 700, marginBottom: 8 }}>{k + 1}. “{R.answers[a]}”</div>
+          <div style={{ fontWeight: 700, marginBottom: 8 }}>{names[a].split(' ')[0]} dijo: “{R.answers[a]}”</div>
           <select value={picks[a] ?? ''} onChange={(e) => setPicks({ ...picks, [a]: Number(e.target.value) })}>
             <option value="" disabled>Elegí a alguien</option>
-            {names.map((x, j) => j !== i && <option key={j} value={j}>{x}</option>)}
+            {names.map((x, j) => j !== i && j !== a && <option key={j} value={j}>{x}</option>)}
           </select>
         </div>
       ))}
@@ -149,15 +149,16 @@ export default function Quien() {
     </div>
   )
   else if (ph === 'reveal') {
-    const right = names.filter((_, v) => v !== author && R.votes[v][author] === author)
-    const wrong = names.filter((_, v) => v !== author && R.votes[v][author] !== author)
+    const tg = R.t[author]
+    const right = names.filter((_, v) => v !== author && v !== tg && R.votes[v][author] === tg)
+    const wrong = names.filter((_, v) => v !== author && v !== tg && R.votes[v][author] !== tg)
     body = (
       <div className="qq-stage">
         <p className="qq-sub">Respuesta {i + 1} de {n}</p>
-        <div className="qq-card q">“{R.answers[author]}”</div>
+        <div className="qq-card q">{names[author]} dijo: “{R.answers[author]}”</div>
         {!flip ? <button className="qq-btn" onClick={() => setFlip(true)}>Revelar</button> : (
           <div className="qq-card qq-flipin">
-            <div className="qq-name">{names[author]} imitando a {names[R.t[author]]}</div>
+            <div className="qq-name">{names[author]} imitaba a {names[tg]}</div>
             <p className="qq-ok small" style={{ marginTop: 8 }}>{right.length ? `Acertaron: ${right.join(', ')}` : 'Nadie acertó'}</p>
             <p className="qq-no small">{wrong.length ? `Se equivocaron: ${wrong.join(', ')}` : '¡Todos acertaron!'}</p>
             <button className="qq-btn" style={{ marginTop: 12 }} onClick={nextReveal}>{i + 1 < n ? 'Siguiente' : 'Ver resultados'}</button>
@@ -181,7 +182,7 @@ export default function Quien() {
         <Cheers />
         <p className="qq-sub">Turno de</p>
         <h2 className="qq-title" style={{ fontSize: 30 }}>{names[d.id]}</h2>
-        <p className="qq-sub">{d.why === 'wrong' ? 'Se equivocó al adivinar.' : 'Nadie lo descubrió: tomás por imitar tan bien.'}</p>
+        <p className="qq-sub">{d.why === 'wrong' ? 'Se equivocó al adivinar.' : 'Nadie se equivocó: tomás vos, que imitaste.'}</p>
         <button className="qq-btn coral" onClick={nextDrink}>Tomo 🍻</button>
         <button className="qq-btn ghost" onClick={nextDrink}>Paso, sin drama</button>
       </div>

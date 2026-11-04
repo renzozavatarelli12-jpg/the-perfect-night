@@ -5,7 +5,7 @@ import Previa from '../components/Previa'
 import ShareSheet from '../components/ShareSheet'
 import LocalNote from '../components/LocalNote'
 import { useConfirm } from '../components/Confirm'
-import { newGuest, mapLink, winners, hoyMessage } from '../utils'
+import { uid, newGuest, mapLink, winners, hoyMessage } from '../utils'
 
 // Logos de los boliches de siempre (public/boliches). Si el boliche tiene su propia foto, gana esa.
 const LOGO = { b1: 'cruza-polo', b2: 'cruza-recoleta', b3: 'la-tincho-fierro', b4: 'tamarisco' }
@@ -17,6 +17,7 @@ export default function Hoy() {
   const [sharing, setSharing] = useState(false)
   const [guestName, setGuestName] = useState('')
   const [guestErr, setGuestErr] = useState('')
+  const [bName, setBName] = useState('')
   const hoy = data.hoy
   const patch = (fn) => update('hoy', fn)
   const count = (b) => Object.values(hoy.votes).filter((v) => v === b.id).length
@@ -40,6 +41,16 @@ export default function Hoy() {
     if (me === g.id) setMe(null)
     update('members', (ms) => ms.filter((m) => m.id !== g.id))
     patch((h) => ({ ...h, votes: Object.fromEntries(Object.entries(h.votes).filter(([k]) => k !== g.id)), previas: h.previas.map((p) => ({ ...p, votes: p.votes.filter((v) => v !== g.id) })) }))
+  }
+  const addBoliche = (e) => {
+    e.preventDefault()
+    const name = bName.trim()
+    if (!name) return
+    update('boliches', (bs) => [...bs, { id: uid(), name, zone: '', address: '', mapUrl: '', photo: '', desc: '', comments: [] }])
+    setBName('')
+  }
+  const removeBoliche = async (b) => {
+    if (await ask(`¿Sacar ${b.name} de la lista?`, 'Sacar')) update('boliches', (bs) => bs.filter((x) => x.id !== b.id))
   }
   const reset = async () => {
     if (await ask('¿Empezar una votación nueva? Se borran los votos (quedan los lugares y boliches).', 'Empezar de cero'))
@@ -73,11 +84,16 @@ export default function Hoy() {
                 onClick={() => patch((h) => ({ ...h, votes: { ...h.votes, [me]: h.votes[me] === b.id ? null : b.id } }))}>
                 {count(b)} {count(b) === 1 ? 'voto' : 'votos'}
               </button>
+              <button className="ib" aria-label={`Sacar ${b.name}`} onClick={() => removeBoliche(b)}><Trash2 size={15} /></button>
             </div>
             <div className="bar"><i style={{ width: max ? `${(count(b) / max) * 100}%` : 0 }} /></div>
           </div>
         ))}
         {!me && <p className="muted small" style={{ marginTop: 10 }}>Elegí quién sos arriba para votar.</p>}
+        <form className="add" onSubmit={addBoliche}>
+          <input value={bName} onChange={(e) => setBName(e.target.value)} placeholder="¿Otro boliche? Escribí el nombre" />
+          <button className="btn sm">Sumar</button>
+        </form>
       </section>
 
       <section className="sec">

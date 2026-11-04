@@ -66,10 +66,6 @@ export default function Grupo() {
         fields={[{ name: 'name', label: 'Trago', required: true }]}
         render={(d) => <><b>{d.name}</b> <span className="muted small">{fans(d).length ? `${fans(d).length} · ${fans(d).map((m) => m.name).join(', ')}` : '—'}</span></>} />
 
-      <ListSection title="Boliches" hint="Los que aparecen para votar en Hoy." items={data.boliches} onChange={set('boliches')}
-        fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'zone', label: 'Zona' }, { name: 'address', label: 'Dirección' }, { name: 'mapUrl', label: 'Link de Google Maps (opcional)', type: 'url' }, { name: 'photo', label: 'URL de una foto (opcional)', type: 'url' }]}
-        render={(b) => <><b>{b.name}</b> <span className="muted small">{b.zone}</span></>} />
-
       <ListSection title="Anécdotas" addLabel="Nueva anécdota" items={data.stories} onChange={set('stories')}
         fields={[{ name: 'title', label: 'Título', required: true }, { name: 'date', label: 'Cuándo', type: 'date' }, { name: 'text', label: 'La historia', type: 'textarea' }]}
         render={(a) => <><b>{a.title}</b> <span className="muted small">{a.date}</span><p className="muted" style={{ marginTop: 4 }}>{a.text}</p></>} />
