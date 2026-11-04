@@ -1,37 +1,25 @@
-import { useState } from 'react'
-import { Dices } from 'lucide-react'
-import { useStore } from '../store'
-import ListSection from '../components/ListSection'
+import { Link } from 'react-router-dom'
+import './quien.css'
+
+const GAMES = [
+  ['quien', '🎭', '¿Quién es quién?', 'Imitá a otro del grupo y que adivinen', 'mg-quien'],
+  ['probable', '🍻', '¿Quién es más probable que…?', 'Sale una, el más probable toma', 'mg-prob'],
+]
 
 export default function Minijuegos() {
-  const { data, update } = useStore()
-  const list = data.probable
-  const [cur, setCur] = useState(null)
-  const [used, setUsed] = useState([]) // no se repite hasta agotar todas
-  const sacar = () => {
-    const fresh = list.filter((q) => !used.includes(q.id))
-    const pool = fresh.length ? fresh : list
-    const q = pool[Math.floor(Math.random() * pool.length)]
-    setCur(q); setUsed(fresh.length ? [...used, q.id] : [q.id])
-  }
   return (
     <>
       <h1>Minijuegos</h1>
-      <section className="sec">
-        <h2>¿Quién es más probable que…?</h2>
-        <p className="muted small">Sale una al azar. El que sea más probable, toma. Antes de jugar, sumá las tuyas abajo.</p>
-        <div className="result" style={{ display: 'block', marginTop: 14 }}>
-          <div className="muted small">¿Quién es más probable que…</div>
-          <b style={{ fontSize: 22 }}>{cur ? `${cur.text}?` : 'Tocá “Sacar una” para empezar'}</b>
-        </div>
-        <div className="row" style={{ marginTop: 14 }}>
-          <button className="btn" disabled={!list.length} onClick={sacar}><Dices size={16} /> Sacar una</button>
-          {cur && <span className="muted small">{used.length}/{list.length}</span>}
-        </div>
-      </section>
-      <ListSection title="Las preguntas" addLabel="Sumar una" hint="Completá la frase: “¿Quién es más probable que…” + lo tuyo." items={list}
-        onChange={(v) => update('probable', v)} fields={[{ name: 'text', label: 'Quién es más probable que…', required: true }]}
-        render={(q) => q.text} />
+      <p className="lead">Elegí uno.</p>
+      <div className="mg-grid">
+        {GAMES.map(([to, icon, title, desc, cls]) => (
+          <Link key={to} to={to} className={`mg-tile ${cls}`}>
+            <span className="mg-icon" aria-hidden="true">{icon}</span>
+            <b>{title}</b>
+            <span className="small">{desc}</span>
+          </Link>
+        ))}
+      </div>
     </>
   )
 }

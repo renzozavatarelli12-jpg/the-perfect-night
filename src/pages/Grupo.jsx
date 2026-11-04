@@ -4,7 +4,7 @@ import { useStore } from '../store'
 import LocalNote from '../components/LocalNote'
 import { useConfirm } from '../components/Confirm'
 import ListSection from '../components/ListSection'
-import { who, today, makeBackup, parseBackup } from '../utils'
+import { today, makeBackup, parseBackup } from '../utils'
 
 function Backup() {
   const { data, me, replaceAll } = useStore()
@@ -49,7 +49,6 @@ export default function Grupo() {
   const ask = useConfirm()
   const set = (k) => (v) => update(k, v)
   const fixed = data.members.filter((m) => !m.guest)
-  const memberOpts = fixed.map((m) => [m.id, m.name])
   const drinkOpts = [['', '—'], ...data.favDrinks.map((d) => [d.id, d.name])]
   const drinkName = (id) => data.favDrinks.find((d) => d.id === id)?.name
   const fans = (d) => fixed.filter((m) => m.drink === d.id)
@@ -70,14 +69,6 @@ export default function Grupo() {
       <ListSection title="Boliches" hint="Los que aparecen para votar en Hoy." items={data.boliches} onChange={set('boliches')}
         fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'zone', label: 'Zona' }, { name: 'address', label: 'Dirección' }, { name: 'mapUrl', label: 'Link de Google Maps (opcional)', type: 'url' }, { name: 'photo', label: 'URL de una foto (opcional)', type: 'url' }]}
         render={(b) => <><b>{b.name}</b> <span className="muted small">{b.zone}</span></>} />
-
-      <ListSection title="Frases típicas" items={data.phrases} onChange={set('phrases')}
-        fields={[{ name: 'text', label: 'La frase', required: true }, { name: 'by', label: '¿Quién la dice?', type: 'select', options: memberOpts }]}
-        render={(f) => <>{f.text}<div className="muted small">— {who(data.members, f.by)}</div></>} />
-
-      <ListSection title="Estadísticas absurdas" addLabel="Nueva estadística" items={data.stats} onChange={set('stats')}
-        fields={[{ name: 'value', label: 'Número', required: true }, { name: 'label', label: 'Qué mide', required: true }]}
-        render={(s) => <div className="row" style={{ flexWrap: 'nowrap' }}><span className="stat">{s.value}</span><span className="muted">{s.label}</span></div>} />
 
       <ListSection title="Anécdotas" addLabel="Nueva anécdota" items={data.stories} onChange={set('stories')}
         fields={[{ name: 'title', label: 'Título', required: true }, { name: 'date', label: 'Cuándo', type: 'date' }, { name: 'text', label: 'La historia', type: 'textarea' }]}
