@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import './rankings.css'
 import { useStore } from '../store'
-import { today } from '../utils'
+import { today, uid } from '../utils'
 import { KINDS, RANKS, LOGROS, total, inYear, bump, unlocked, season } from '../rank'
 
 const list = (a) => (a.length ? a.join(' y ') : 'Todavía nadie')
@@ -17,6 +17,17 @@ export default function Rankings() {
   const S = season(data.log, members, year)
   const p = members.find((m) => m.id === pid)
   const ana = data.flama[year] || ''
+  const [dName, setDName] = useState('')
+  const setDrink = (id) => update('members', (ms) => ms.map((m) => (m.id === pid ? { ...m, drink: id } : m)))
+  const addDrink = (e) => {
+    e.preventDefault()
+    const name = dName.trim()
+    if (!name) return
+    const same = data.favDrinks.find((d) => d.name.toLowerCase() === name.toLowerCase()) // no duplicar
+    const id = same ? same.id : uid()
+    if (!same) update('favDrinks', (ds) => [...ds, { id, name, note: '' }])
+    setDrink(id); setDName('')
+  }
   const leaders = (k) => {
     const max = Math.max(0, ...members.map((m) => total(data.log, m.id, k)))
     return { max, who: max ? members.filter((m) => total(data.log, m.id, k) === max).map((m) => m.name) : [] }
@@ -50,13 +61,18 @@ export default function Rankings() {
             <select value={pid} onChange={(e) => setPid(e.target.value)} aria-label="Integrante">
               {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
             </select>
-            <label style={{ display: 'grid', gap: 6, marginTop: 10 }}>
+            <div style={{ marginTop: 12 }}>
               <span className="muted small">Qué tomás</span>
-              <select value={p?.drink || ''} onChange={(e) => update('members', (ms) => ms.map((m) => (m.id === pid ? { ...m, drink: e.target.value } : m)))}>
-                <option value="">—</option>
-                {data.favDrinks.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
-              </select>
-            </label>
+              <div className="row" style={{ marginTop: 6, flexWrap: 'wrap' }}>
+                {data.favDrinks.map((d) => (
+                  <button key={d.id} className={`pill ${p?.drink === d.id ? 'on' : ''}`} onClick={() => setDrink(p?.drink === d.id ? '' : d.id)}>{d.name}</button>
+                ))}
+              </div>
+              <form className="add" onSubmit={addDrink}>
+                <input value={dName} onChange={(e) => setDName(e.target.value)} placeholder="¿Otro trago? Escribilo" />
+                <button className="btn sm">Sumar</button>
+              </form>
+            </div>
             {KINDS.map((x) => (
               <div className="bn-row" key={x.k}>
                 <span style={{ fontSize: 24 }}>{x.icon}</span>
