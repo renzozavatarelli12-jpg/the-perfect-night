@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import FormSheet from './FormSheet'
 import { uid } from '../utils'
+import { useConfirm } from './Confirm'
 
 // Lista editable genérica: agregar / editar / borrar. `render(item)` dibuja el contenido.
 export default function ListSection({ title, hint, items, fields, onChange, render, addLabel = 'Agregar', canAdd = true, canDelete = true, className = '' }) {
   const [sheet, setSheet] = useState(null)
+  const ask = useConfirm()
   const open = (item) =>
     setSheet({
       title: item ? 'Editar' : addLabel,
@@ -25,7 +27,7 @@ export default function ListSection({ title, hint, items, fields, onChange, rend
             <div className="grow">{render(item)}</div>
             <button className="ib" aria-label="Editar" onClick={() => open(item)}><Pencil size={16} /></button>
             {canDelete && (
-              <button className="ib" aria-label="Borrar" onClick={() => window.confirm('¿Borrar?') && onChange(items.filter((i) => i.id !== item.id))}>
+              <button className="ib" aria-label="Borrar" onClick={async () => (await ask('¿Borrar este elemento?', 'Borrar')) && onChange(items.filter((i) => i.id !== item.id))}>
                 <Trash2 size={16} />
               </button>
             )}
