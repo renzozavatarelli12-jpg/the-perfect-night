@@ -56,11 +56,6 @@ export const seed = () => ({
   cocktails: [
     { id: 'k1', name: 'La Especial de ejemplo', recipe: 'Ejemplo: ingredientes y proporciones acá. Secreto de grupo.' },
   ],
-  jokes: [
-    { id: 'j1', text: 'Dea: lo que se tira después de un chiste.' },
-    { id: 'j3', text: 'Los comunicados oficiales de Renzo: “No es juntada. No es ocio. Es inversión en capital humano.”' },
-    { id: 'j4', text: 'FLAMA: así se llama el grupo desde que Joaco lo bautizó en 2022.' },
-  ],
   phrases: [
     { id: 'f1', text: '“Oka.”', by: 'm3' },
     { id: 'f2', text: '“Boe.”', by: 'm2' },
