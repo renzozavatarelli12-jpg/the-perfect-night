@@ -50,6 +50,13 @@ export default function Rankings() {
             <select value={pid} onChange={(e) => setPid(e.target.value)} aria-label="Integrante">
               {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
             </select>
+            <label style={{ display: 'grid', gap: 6, marginTop: 10 }}>
+              <span className="muted small">Qué tomás</span>
+              <select value={p?.drink || ''} onChange={(e) => update('members', (ms) => ms.map((m) => (m.id === pid ? { ...m, drink: e.target.value } : m)))}>
+                <option value="">—</option>
+                {data.favDrinks.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            </label>
             {KINDS.map((x) => (
               <div className="bn-row" key={x.k}>
                 <span style={{ fontSize: 24 }}>{x.icon}</span>
