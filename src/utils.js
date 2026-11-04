@@ -18,7 +18,8 @@ export function parseBackup(text) {
   try { b = JSON.parse(text) } catch { return { error: 'El archivo no es un JSON válido.' } }
   if (!isObj(b) || b.app !== 'the-perfect-night' || !isObj(b.data)) return { error: 'Este archivo no es una copia de The Perfect Night.' }
   const d = b.data
-  for (const k of Object.keys(seed())) {
+  const ref = seed()
+  for (const k of Object.keys(ref).filter((k) => Array.isArray(ref[k]))) {
     if (!Array.isArray(d[k])) return { error: `Falta la sección "${k}" o está dañada.` }
     if (!d[k].every((i) => isObj(i) && typeof i.id === 'string')) return { error: `La sección "${k}" tiene elementos inválidos.` }
   }
@@ -27,7 +28,9 @@ export function parseBackup(text) {
   if (!d.nights.every(okNight)) return { error: 'Alguna noche tiene datos dañados.' }
   if (!d.boliches.every((x) => Array.isArray(x.comments))) return { error: 'Algún boliche tiene datos dañados.' }
   if (!d.members.every((m) => typeof m.name === 'string')) return { error: 'Algún integrante tiene datos dañados.' }
-  return { data: d, me: d.members.some((m) => m.id === b.me) ? b.me : null }
+  // drinkVotes es opcional (copias viejas no lo traen)
+  if (d.drinkVotes !== undefined && !(isObj(d.drinkVotes) && Object.values(d.drinkVotes).every((a) => Array.isArray(a)))) return { error: 'Los votos de tragos están dañados.' }
+  return { data: { drinkVotes: {}, ...d }, me: d.members.some((m) => m.id === b.me) ? b.me : null }
 }
 
 // --- mensaje de WhatsApp ---

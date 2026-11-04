@@ -7,7 +7,7 @@ const Ctx = createContext()
 const load = (k) => { try { return JSON.parse(localStorage.getItem(k)) } catch { return null } }
 
 export function StoreProvider({ children }) {
-  const [data, setData] = useState(() => load(KEY) || seed())
+  const [data, setData] = useState(() => ({ ...seed(), ...load(KEY) }))
   const [me, setMe] = useState(() => load(KEY + '-me'))
   useEffect(() => { localStorage.setItem(KEY, JSON.stringify(data)) }, [data])
   useEffect(() => { localStorage.setItem(KEY + '-me', JSON.stringify(me)) }, [me])
