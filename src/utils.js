@@ -22,6 +22,7 @@ export function parseBackup(text) {
   const d = b.data
   const ref = seed()
   for (const k of Object.keys(ref).filter((k) => Array.isArray(ref[k]))) {
+    if (k === 'probable' && d[k] === undefined) continue // copias viejas no lo traen
     if (!Array.isArray(d[k])) return { error: `Falta la sección "${k}" o está dañada.` }
     if (!d[k].every((i) => isObj(i) && typeof i.id === 'string')) return { error: `La sección "${k}" tiene elementos inválidos.` }
   }
@@ -29,7 +30,7 @@ export function parseBackup(text) {
   // hoy es opcional (copias viejas no lo traen)
   const h = d.hoy
   if (h !== undefined && !(isObj(h) && isObj(h.votes) && Array.isArray(h.previas) && h.previas.every((p) => isObj(p) && Array.isArray(p.votes)))) return { error: 'La votación de hoy está dañada.' }
-  return { data: { hoy: ref.hoy, ...d }, me: d.members.some((m) => m.id === b.me) ? b.me : null }
+  return { data: { hoy: ref.hoy, probable: ref.probable, ...d }, me: d.members.some((m) => m.id === b.me) ? b.me : null }
 }
 
 // --- mensaje de WhatsApp ---
