@@ -1,0 +1,10 @@
+{
+  "name": "the perfect night.",
+  "short_name": "perfect night",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#111014",
+  "theme_color": "#111014",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
