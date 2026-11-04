@@ -1,12 +1,16 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Disc3, Martini, Moon, ChevronRight } from 'lucide-react'
+import { Plus, Disc3, Martini, Moon, ChevronRight, MessageCircle } from 'lucide-react'
 import { useStore } from '../store'
 import { today, fmtDate, who } from '../utils'
 import LocalNote from '../components/LocalNote'
+import ShareSheet from '../components/ShareSheet'
+
+const APP_MSG = (url) => `🌙 the perfect night. — la app del grupo para organizar las salidas.\nEntrá desde el celu: ${url}\nTip: en Chrome tocá ⋮ y "Agregar a la pantalla principal" (o "Instalar app") y queda como una app más.\n(Versión de prueba: por ahora cada uno ve sus propios datos en su celu.)`
 
 export default function Home() {
   const { data } = useStore()
+  const [invite, setInvite] = useState(false)
   const [i, setI] = useState(() => Math.floor(Math.random() * 100))
   const next = data.nights.filter((n) => n.date >= today()).sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)).slice(0, 3)
   const phrase = data.phrases.length ? data.phrases[i % data.phrases.length] : null
@@ -20,6 +24,7 @@ export default function Home() {
         <p className="lead">Solo para nosotros.</p>
         <div className="row" style={{ marginTop: 24 }}>
           <Link to="/noches/nueva" className="btn"><Plus size={16} /> Armar una noche</Link>
+          <button className="btn ghost" onClick={() => setInvite(true)}><MessageCircle size={16} /> Invitar al grupo</button>
         </div>
       </div>
 
@@ -57,6 +62,7 @@ export default function Home() {
         </section>
       )}
       <div className="sec"><LocalNote /></div>
+      {invite && <ShareSheet initial={APP_MSG(location.origin + import.meta.env.BASE_URL)} onClose={() => setInvite(false)} />}
     </>
   )
 }

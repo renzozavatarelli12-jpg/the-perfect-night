@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import { MessageCircle, Trash2, Plus, Trophy, MapPin, Clock, Lock, Unlock } from 'lucide-react'
+import { MessageCircle, Trash2, Trophy, MapPin, Clock, Lock, Unlock } from 'lucide-react'
 import { useStore } from '../store'
 import { fmtDate, uid, who, nightMessage, newGuest } from '../utils'
 import ShareSheet from '../components/ShareSheet'
+import Previa from '../components/Previa'
+import { useConfirm } from '../components/Confirm'
 
 const RSVP = [['yes', 'Voy'], ['maybe', 'Capaz'], ['no', 'No voy']]
 
@@ -12,7 +14,7 @@ export default function NightDetail() {
   const nav = useNavigate()
   const { data, update, me, setMe } = useStore()
   const [sharing, setSharing] = useState(false)
-  const [previa, setPrevia] = useState('')
+  const ask = useConfirm()
   const [guestName, setGuestName] = useState('')
   const [guestErr, setGuestErr] = useState('')
   const night = data.nights.find((n) => n.id === id)
@@ -30,14 +32,13 @@ export default function NightDetail() {
     if (!data.members.includes(g)) update('members', (ms) => [...ms, g])
     setMe(g.id); setGuestName(''); setGuestErr('')
   }
-  const removeGuest = (g) => {
-    if (!window.confirm(`¿Quitar a ${g.name}? Sus votos y confirmación de esta noche se mantienen.`)) return
+  const removeGuest = async (g) => {
+    if (!(await ask(`¿Quitar a ${g.name}? Sus votos y confirmación de esta noche se mantienen.`, 'Quitar'))) return
     if (me === g.id) setMe(null)
     update('members', (ms) => ms.filter((m) => m.id !== g.id))
     update('drinkVotes', (v) => Object.fromEntries(Object.entries(v).filter(([k]) => k !== g.id)))
   }
   const patch = (fn) => update('nights', (ns) => ns.map((n) => (n.id === id ? fn(n) : n)))
-  const toggle = (arr, x) => (arr.includes(x) ? arr.filter((y) => y !== x) : [...arr, x])
   const tally = data.boliches.map((b) => ({ b, n: Object.values(night.votes).filter((v) => v === b.id).length }))
   const max = Math.max(0, ...tally.map((t) => t.n))
   const leaders = max ? tally.filter((t) => t.n === max) : []
@@ -88,27 +89,7 @@ export default function NightDetail() {
         <p className="muted small" style={{ marginTop: 8 }}>Los invitados votan solo en esta noche y se quitan después con el tacho.</p>
       </section>
 
-      <section className="sec">
-        <h2>Previa: ¿dónde?</h2>
-        {night.previas.map((p) => (
-          <div className="li" key={p.id}>
-            <span className="grow">{p.place}</span>
-            <button disabled={!me} className={`pill ${p.votes.includes(me) ? 'on' : ''}`}
-              onClick={() => patch((n) => ({ ...n, previas: n.previas.map((x) => (x.id === p.id ? { ...x, votes: toggle(x.votes, me) } : x)) }))}>
-              {p.votes.length} {p.votes.length === 1 ? 'voto' : 'votos'}
-            </button>
-            <button className="ib" aria-label="Quitar" onClick={() => patch((n) => ({ ...n, previas: n.previas.filter((x) => x.id !== p.id) }))}><Trash2 size={15} /></button>
-          </div>
-        ))}
-        <form className="add" onSubmit={(e) => {
-          e.preventDefault()
-          if (!previa.trim()) return
-          patch((n) => ({ ...n, previas: [...n.previas, { id: uid(), place: previa.trim(), votes: [] }] })); setPrevia('')
-        }}>
-          <input value={previa} onChange={(e) => setPrevia(e.target.value)} placeholder="Proponé un lugar (casa de…, plaza…)" />
-          <button className="btn sm"><Plus size={14} /> Sumar</button>
-        </form>
-      </section>
+      <Previa night={night} patch={patch} />
 
       <section className="sec">
         <div className="sec-h"><h2>Dónde terminamos</h2>
@@ -144,7 +125,7 @@ export default function NightDetail() {
       </section>
 
       <div className="sec">
-        <button className="btn ghost sm" onClick={() => { if (window.confirm('¿Borrar esta noche?')) { update('nights', (ns) => ns.filter((n) => n.id !== id)); nav('/noches') } }}>
+        <button className="btn ghost sm" onClick={async () => { if (await ask('¿Borrar esta noche?', 'Borrar')) { update('nights', (ns) => ns.filter((n) => n.id !== id)); nav('/noches') } }}>
           <Trash2 size={14} /> Borrar noche
         </button>
       </div>
