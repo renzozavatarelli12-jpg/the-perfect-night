@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import Home from './pages/Home'
+import Hoy from './pages/Hoy'
 import Nights from './pages/Nights'
 import NightNew from './pages/NightNew'
 import NightDetail from './pages/NightDetail'
@@ -13,6 +14,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="hoy" element={<Hoy />} />
         <Route path="noches" element={<Nights />} />
         <Route path="noches/nueva" element={<NightNew />} />
         <Route path="noches/:id" element={<NightDetail />} />

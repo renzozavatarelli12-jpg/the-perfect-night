@@ -1,7 +1,10 @@
 import { seed } from './data/seed'
 
 export const uid = () => Math.random().toString(36).slice(2, 9)
-export const today = () => new Date().toISOString().slice(0, 10)
+const ymd = (d) => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10)
+export const today = () => ymd(new Date()) // fecha LOCAL (con toISOString, de noche en Argentina ya sería "mañana")
+// La noche de "hoy" sigue hasta las 6am: a la 1am del domingo todavía es la noche del sábado.
+export const tonight = () => { const d = new Date(); if (d.getHours() < 6) d.setDate(d.getDate() - 1); return ymd(d) }
 export const fmtDate = (d) =>
   new Date(d + 'T12:00').toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })
 export const who = (members, id) => members.find((m) => m.id === id)?.name ?? (String(id).startsWith('g_') ? 'Invitado' : '¿?')
