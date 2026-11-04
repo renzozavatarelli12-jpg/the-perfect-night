@@ -85,6 +85,9 @@ export const seed = () => ({
     { id: 'w20', cat: 'Humor interno', text: '¿Qué contestaría esta persona cuando el grupo pregunta “¿qué hacen?”?' },
     { id: 'w21', cat: 'Humor interno', text: '¿Cuál sería la frase típica de esta persona esta noche?' },
   ],
+  // Rankings: cada anotación es { id, m: idIntegrante, k: estadística, d: fecha, n }. Arranca vacío: no hay datos inventados.
+  log: [],
+  flama: {}, // anécdota del año: { '2026': 'texto' }
   stories: [
     { id: 'a1', title: 'Nace el grupo', date: '2021-12-26',
       text: 'Renzo lo crea diciendo que, si quieren, se pueden salir. Años después sigue activo.' },
