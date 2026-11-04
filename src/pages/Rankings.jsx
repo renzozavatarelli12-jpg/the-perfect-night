@@ -25,9 +25,9 @@ export default function Rankings() {
   return (
     <div className="bn">
       <div className="bn-hero">
-        <span className="bn-e">🍌</span>
+        <span className="bn-e">🔥</span>
         <h1>Rankings</h1>
-        <p>Tincho Banana mira todo. Anotá bien, che.</p>
+        <p>Quién la rompe más. Anotá bien.</p>
       </div>
 
       <section className="sec">
