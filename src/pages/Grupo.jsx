@@ -25,7 +25,7 @@ function Backup() {
     try { r = f.size > 5e6 ? { error: 'El archivo es demasiado grande.' } : parseBackup(await f.text()) } catch { r = { error: 'No se pudo leer el archivo.' } }
     if (r.error) return setMsg({ ok: false, text: `${r.error} No se cambió nada.` })
     const c = (k) => r.data[k].length
-    if (!(await ask(`Esto REEMPLAZA todo lo que tenés ahora por la copia (${c('nights')} noches, ${c('boliches')} boliches, ${c('members')} integrantes). Tip: exportá una copia de lo actual antes. ¿Reemplazar?`, 'Reemplazar')))
+    if (!(await ask(`Esto REEMPLAZA todo lo que tenés ahora por la copia (${c('boliches')} boliches, ${c('members')} integrantes). Tip: exportá una copia de lo actual antes. ¿Reemplazar?`, 'Reemplazar')))
       return setMsg({ ok: false, text: 'Importación cancelada. No se cambió nada.' })
     replaceAll(r.data, r.me)
     setMsg({ ok: true, text: 'Copia importada.' })
@@ -50,14 +50,26 @@ export default function Grupo() {
   const set = (k) => (v) => update(k, v)
   const fixed = data.members.filter((m) => !m.guest)
   const memberOpts = fixed.map((m) => [m.id, m.name])
+  const drinkOpts = [['', '—'], ...data.favDrinks.map((d) => [d.id, d.name])]
+  const drinkName = (id) => data.favDrinks.find((d) => d.id === id)?.name
+  const fans = (d) => fixed.filter((m) => m.drink === d.id)
+  const ranked = [...data.favDrinks].sort((a, b) => fans(b).length - fans(a).length)
   return (
     <>
       <h1>El grupo</h1>
       <p className="lead">Todo lo que nadie de afuera entendería.</p>
 
       <ListSection title="Integrantes y apodos" addLabel="Sumar integrante" items={fixed} onChange={(v) => update('members', (ms) => [...v, ...ms.filter((m) => m.guest)])}
-        fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'nick', label: 'Apodo' }, { name: 'drink', label: 'Lo que toma' }]}
-        render={(m) => <div className="row"><b>{m.name}</b>{m.nick && <span className="tag">{m.nick}</span>}</div>} />
+        fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'nick', label: 'Apodo' }, { name: 'drink', label: 'Qué tomás', type: 'select', options: drinkOpts }]}
+        render={(m) => <div className="row"><b>{m.name}</b>{m.nick && <span className="tag">{m.nick}</span>}{drinkName(m.drink) && <span className="tag">🍹 {drinkName(m.drink)}</span>}</div>} />
+
+      <ListSection title="Ranking de tragos" addLabel="Sumar trago" hint="Se arma solo con lo que elige cada uno arriba (lápiz → Qué tomás)." items={ranked} onChange={set('favDrinks')}
+        fields={[{ name: 'name', label: 'Trago', required: true }]}
+        render={(d) => <><b>{d.name}</b> <span className="muted small">{fans(d).length ? `${fans(d).length} · ${fans(d).map((m) => m.name).join(', ')}` : '—'}</span></>} />
+
+      <ListSection title="Boliches" hint="Los que aparecen para votar en Hoy." items={data.boliches} onChange={set('boliches')}
+        fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'zone', label: 'Zona' }, { name: 'address', label: 'Dirección' }, { name: 'mapUrl', label: 'Link de Google Maps (opcional)', type: 'url' }, { name: 'photo', label: 'URL de una foto (opcional)', type: 'url' }]}
+        render={(b) => <><b>{b.name}</b> <span className="muted small">{b.zone}</span></>} />
 
       <ListSection title="Frases típicas" items={data.phrases} onChange={set('phrases')}
         fields={[{ name: 'text', label: 'La frase', required: true }, { name: 'by', label: '¿Quién la dice?', type: 'select', options: memberOpts }]}
