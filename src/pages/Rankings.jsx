@@ -47,7 +47,7 @@ export default function Rankings() {
           {RANKS.map((r) => { const L = leaders(r.k); return (
             <div className="bn-card" key={r.k}>
               <span className="e">{r.icon}</span><b>{r.title}</b>
-              <span className="w">{list(L.who)}</span>
+              <span className={`w ${L.max ? '' : 'tbd'}`}>{list(L.who)}</span>
               <span className="small" aria-label={`${L.max} ${r.desc.toLowerCase()}`}>{L.max || ''}</span>
             </div>
           ) })}

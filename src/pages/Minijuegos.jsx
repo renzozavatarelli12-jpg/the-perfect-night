@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import './quien.css'
 
 const GAMES = [
-  ['quien', '🎭', '¿Quién es quién?', 'Imitá a otro del grupo y que adivinen', 'mg-quien'],
+  ['quien', '🎭', '¿Quién es quién?', 'Respondé como otro del grupo y que adivinen a quién imitás', 'mg-quien'],
   ['probable', '🍻', '¿Quién es más probable que…?', 'Sale una, el más probable toma', 'mg-prob'],
 ]
 

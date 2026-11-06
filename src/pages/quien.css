@@ -1,11 +1,14 @@
 /* Minijuegos: hub + ¿Quién es quién? (más juguetón que el resto, misma noche) */
-.mg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 26px; }
+.mg-grid { display: grid; gap: 12px; margin-top: 26px; }
+@media (min-width: 600px) { .mg-grid { grid-template-columns: 1fr 1fr; } .mg-tile { min-height: 240px; } }
 .mg-tile {
-  aspect-ratio: 1; border-radius: 28px; padding: 18px; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;
+  min-height: 176px; border-radius: 28px; padding: 18px 96px 18px 20px; display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;
   transition: transform .2s; position: relative; overflow: hidden; color: #fff;
 }
 .mg-tile:hover { transform: translateY(-3px) rotate(-1deg); } .mg-tile:active { transform: scale(.97); }
-.mg-tile b { font-family: var(--display); font-size: 26px; line-height: .95; font-weight: 800; }
+.mg-tile b { font-family: var(--display); font-size: 36px; line-height: .92; font-weight: 800; }
+.mg-tile:nth-child(2) { margin-left: 28px; } /* fichas corridas: no son una grilla de plantilla */
+@media (min-width: 600px) { .mg-tile:nth-child(2) { margin: 28px 0 0; } }
 .mg-tile .small { color: rgba(255, 255, 255, .78); font-size: 12px; }
 .mg-icon { font-size: 44px; position: absolute; top: 14px; right: 16px; animation: float 4s ease-in-out infinite; }
 .mg-quien { background: linear-gradient(145deg, #8B5CF6, #4C2A9E 70%); }
@@ -22,7 +25,7 @@
 .qq-top button, .qq-top a { font-size: 13px; color: var(--l); display: flex; align-items: center; gap: 6px; }
 .qq-stage { position: relative; z-index: 2; display: grid; gap: 16px; }
 .qq-title {
-  font-family: var(--display); font-weight: 900; letter-spacing: 0; line-height: .88; text-transform: uppercase; font-size: clamp(52px, 16vw, 96px);
+  font-family: var(--display); font-weight: 900; letter-spacing: 0; line-height: .96; text-transform: uppercase; padding-top: .08em; font-size: clamp(52px, 16vw, 96px);
   background: linear-gradient(100deg, var(--l), var(--v) 50%, var(--c)); -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .qq-h { font-family: var(--display); font-weight: 800; letter-spacing: 0; line-height: .95; font-size: clamp(36px, 10vw, 52px); text-transform: none; color: #fff; }
