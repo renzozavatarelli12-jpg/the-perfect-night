@@ -1,7 +1,7 @@
 export default function LocalNote() {
   return (
     <p className="note">
-      Por ahora los datos se guardan solo en este navegador: cada persona ve los suyos. Compartir un mensaje no sincroniza votos ni asistencia entre dispositivos.
+      Ojo: todo queda guardado en este celu. Cada uno ve lo suyo, así que mandá el resumen al grupo para que se enteren.
     </p>
   )
 }

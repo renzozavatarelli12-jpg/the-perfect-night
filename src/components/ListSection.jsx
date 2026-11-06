@@ -34,7 +34,7 @@ export default function ListSection({ title, hint, items, fields, onChange, rend
             )}
           </div>
         ))}
-        {!items.length && <p className="muted li">Nada por acá todavía.</p>}
+        {!items.length && <p className="empty">Nada por acá todavía. Arrancá vos.</p>}
       </div>
       {sheet && createPortal(<FormSheet {...sheet} fields={fields} onClose={() => setSheet(null)} />, document.body)} {/* portal: dentro de la página animada, el panel "fixed" quedaba fuera de pantalla */}
     </section>

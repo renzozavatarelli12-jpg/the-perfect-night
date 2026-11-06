@@ -16,7 +16,7 @@ export function ConfirmProvider({ children }) {
           <div className="sheet" role="alertdialog" aria-label={q.text} onClick={(e) => e.stopPropagation()}>
             <p>{q.text}</p>
             <div className="row end">
-              <button className="btn ghost" onClick={() => close(false)}>Cancelar</button>
+              <button className="btn ghost" onClick={() => close(false)}>Mejor no</button>
               <button className="btn" autoFocus onClick={() => close(true)}>{q.ok}</button>
             </div>
           </div>
