@@ -5,7 +5,7 @@
   transition: transform .2s; position: relative; overflow: hidden; color: #fff;
 }
 .mg-tile:hover { transform: translateY(-3px) rotate(-1deg); } .mg-tile:active { transform: scale(.97); }
-.mg-tile b { font-size: 19px; line-height: 1.1; letter-spacing: -.02em; font-weight: 800; }
+.mg-tile b { font-family: var(--display); font-size: 26px; line-height: .95; font-weight: 800; }
 .mg-tile .small { color: rgba(255, 255, 255, .78); font-size: 12px; }
 .mg-icon { font-size: 44px; position: absolute; top: 14px; right: 16px; animation: float 4s ease-in-out infinite; }
 .mg-quien { background: linear-gradient(145deg, #8B5CF6, #4C2A9E 70%); }
@@ -22,11 +22,11 @@
 .qq-top button, .qq-top a { font-size: 13px; color: var(--l); display: flex; align-items: center; gap: 6px; }
 .qq-stage { position: relative; z-index: 2; display: grid; gap: 16px; }
 .qq-title {
-  font-weight: 900; letter-spacing: -.055em; line-height: .9; text-transform: uppercase; font-size: clamp(46px, 14vw, 88px);
+  font-family: var(--display); font-weight: 900; letter-spacing: 0; line-height: .88; text-transform: uppercase; font-size: clamp(52px, 16vw, 96px);
   background: linear-gradient(100deg, var(--l), var(--v) 50%, var(--c)); -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.qq-h { font-weight: 900; letter-spacing: -.04em; line-height: 1; font-size: clamp(30px, 8vw, 46px); text-transform: none; color: #fff; }
-.qq-name { font-weight: 900; letter-spacing: -.045em; line-height: 1; font-size: clamp(38px, 11vw, 64px); color: var(--c); }
+.qq-h { font-family: var(--display); font-weight: 800; letter-spacing: 0; line-height: .95; font-size: clamp(36px, 10vw, 52px); text-transform: none; color: #fff; }
+.qq-name { font-family: var(--display); font-weight: 900; letter-spacing: 0; line-height: .95; font-size: clamp(42px, 12vw, 68px); color: var(--c); }
 .qq-sub { color: #b9b2c9; font-size: 16px; }
 .qq-emoji { font-size: 64px; line-height: 1; display: block; animation: float 3s ease-in-out infinite; }
 .qq-card {
@@ -51,7 +51,7 @@
 .qq-board li:first-child { border-color: var(--c); background: linear-gradient(90deg, rgba(255, 122, 102, .16), #14111a); }
 .qq-board b { flex: 1; font-weight: 700; }
 .qq-pos { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--v); font-weight: 800; font-size: 13px; }
-.qq-pts { font-weight: 900; font-size: 22px; color: var(--c); }
+.qq-pts { font-family: var(--display); font-weight: 900; font-size: 30px; line-height: 1; color: var(--c); }
 .qq-add { color: var(--c); font-weight: 800; }
 .qq-cheers { display: flex; justify-content: center; gap: 0; font-size: 0; position: relative; height: 90px; align-items: center; }
 .qq-cheers svg { width: 70px; height: 70px; color: var(--l); }

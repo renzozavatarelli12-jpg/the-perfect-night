@@ -44,6 +44,8 @@ function Backup() {
   )
 }
 
+const AV = ['var(--lav)', 'var(--flare)', 'var(--gold)', '#9FD8C4', '#E7A6D6', '#A9C4F5'] // un color por integrante
+
 export default function Grupo() {
   const { data, update, reset } = useStore()
   const ask = useConfirm()
@@ -54,20 +56,26 @@ export default function Grupo() {
   return (
     <>
       <h1>El grupo</h1>
-      <p className="lead">Todo lo que nadie de afuera entendería.</p>
+      <p className="lead">Los de siempre, sus apodos y las historias que no se cuentan afuera.</p>
 
-      <ListSection title="Integrantes y apodos" addLabel="Sumar integrante" items={fixed} onChange={(v) => update('members', (ms) => [...v, ...ms.filter((m) => m.guest)])}
+      <ListSection title="Los de siempre" addLabel="Sumar integrante" items={fixed} onChange={(v) => update('members', (ms) => [...v, ...ms.filter((m) => m.guest)])}
         fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'nick', label: 'Apodo' }, { name: 'drink', label: 'Qué tomás', type: 'select', options: drinkOpts }]}
-        render={(m) => <div className="row"><b>{m.name}</b>{m.nick && <span className="tag">{m.nick}</span>}{drinkName(m.drink) && <span className="tag">🍹 {drinkName(m.drink)}</span>}</div>} />
+        render={(m) => (
+          <div className="row" style={{ flexWrap: 'nowrap' }}>
+            <span className="avatar" aria-hidden="true" style={{ '--av': AV[fixed.indexOf(m) % AV.length] }}>{m.name[0]}</span>
+            <span className="grow"><b style={{ fontSize: 17 }}>{m.name}</b>{m.nick && <span className="muted small" style={{ display: 'block' }}>{m.nick}</span>}</span>
+            {drinkName(m.drink) && <span className="tag">{drinkName(m.drink)}</span>}
+          </div>
+        )} />
 
       <ListSection title="Anécdotas" addLabel="Nueva anécdota" items={data.stories} onChange={set('stories')}
         fields={[{ name: 'title', label: 'Título', required: true }, { name: 'date', label: 'Cuándo', type: 'date' }, { name: 'text', label: 'La historia', type: 'textarea' }]}
-        render={(a) => <><b>{a.title}</b> <span className="muted small">{a.date}</span><p className="muted" style={{ marginTop: 4 }}>{a.text}</p></>} />
+        render={(a) => <><b style={{ fontSize: 17 }}>{a.title}</b> {a.date && <span className="muted small">{new Date(a.date + 'T12:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}<p className="muted" style={{ marginTop: 4, maxWidth: '60ch' }}>{a.text}</p></>} />
 
       <Backup />
 
       <div className="sec">
-        <button className="btn ghost sm" onClick={async () => (await ask('Esto borra TODO lo que cargaste y vuelve a los datos de ejemplo. ¿Seguro?', 'Restaurar')) && reset()}>
+        <button className="btn ghost sm" onClick={async () => (await ask('Esto borra todo lo que cargaste y vuelve a los datos de ejemplo. No hay vuelta atrás.', 'Restaurar')) && reset()}>
           Restaurar datos de ejemplo
         </button>
       </div>

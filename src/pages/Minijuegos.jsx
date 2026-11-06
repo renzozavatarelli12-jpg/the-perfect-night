@@ -10,7 +10,7 @@ export default function Minijuegos() {
   return (
     <>
       <h1>Minijuegos</h1>
-      <p className="lead">Elegí uno.</p>
+      <p className="lead">Para la previa. Un solo celu, que vaya pasando de mano en mano.</p>
       <div className="mg-grid">
         {GAMES.map(([to, icon, title, desc, cls]) => (
           <Link key={to} to={to} className={`mg-tile ${cls}`}>

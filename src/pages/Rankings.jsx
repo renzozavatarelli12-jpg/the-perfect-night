@@ -4,7 +4,7 @@ import { useStore } from '../store'
 import { today, uid } from '../utils'
 import { KINDS, RANKS, LOGROS, total, inYear, bump, unlocked, season } from '../rank'
 
-const list = (a) => (a.length ? a.join(' y ') : 'Todavía nadie')
+const list = (a) => (a.length ? a.join(' y ') : 'Vacante')
 
 export default function Rankings() {
   const { data, update, me } = useStore()
@@ -36,7 +36,7 @@ export default function Rankings() {
   return (
     <div className="bn">
       <div className="bn-hero">
-        <span className="bn-e">🔥</span>
+        <span className="bn-e" aria-hidden="true">🏆</span>
         <h1>Rankings</h1>
         <p>Quién la rompe más. Anotá bien.</p>
       </div>
@@ -48,14 +48,14 @@ export default function Rankings() {
             <div className="bn-card" key={r.k}>
               <span className="e">{r.icon}</span><b>{r.title}</b>
               <span className="w">{list(L.who)}</span>
-              <span className="small">{L.max ? `${L.max} · ${r.desc.toLowerCase()}` : r.desc}</span>
+              <span className="small" aria-label={`${L.max} ${r.desc.toLowerCase()}`}>{L.max || ''}</span>
             </div>
           ) })}
         </div>
       </section>
 
       <section className="sec">
-        <h2>Mi perfil de la noche</h2>
+        <h2>Tu ficha</h2>
         {members.length ? (
           <>
             <select value={pid} onChange={(e) => setPid(e.target.value)} aria-label="Integrante">
@@ -76,18 +76,18 @@ export default function Rankings() {
             {KINDS.map((x) => (
               <div className="bn-row" key={x.k}>
                 <span style={{ fontSize: 24 }}>{x.icon}</span>
-                <span className="grow">{x.label}<span className="muted small"> · {nowY}: {inYear(data.log, pid, x.k, nowY)}</span></span>
+                <span className="grow">{x.label}<span className="muted small" style={{ display: 'block', fontWeight: 400 }}>{inYear(data.log, pid, x.k, nowY)} en {nowY}</span></span>
                 <button className="bn-step minus" aria-label={`Restar ${x.label}`} disabled={!total(data.log, pid, x.k)} onClick={() => set(pid, x.k, -1)}>−</button>
                 <span className="bn-n">{total(data.log, pid, x.k)}</span>
                 <button className="bn-step" aria-label={`Sumar ${x.label}`} onClick={() => set(pid, x.k, 1)}>+</button>
               </div>
             ))}
-            <p className="muted small" style={{ marginTop: 8 }}>Suma anota hoy. Las salidas cuentan una vez por día. El “−” corrige el último registro.</p>
+            <p className="muted small" style={{ marginTop: 8 }}>El + anota en la fecha de hoy (la salida, una vez por día). El − borra el último que cargaste.</p>
             <div className="bn-logros">
               {LOGROS.map((lg) => { const on = unlocked(data.log, pid).includes(lg); return (
                 <div className={`bn-logro ${on ? 'on' : ''}`} key={lg.id}>
-                  <span className="e">{lg.icon}</span>
-                  <span className="grow"><b>{lg.name}</b><br /><span className="muted small">{on ? '¡Desbloqueado!' : `${Math.min(total(data.log, pid, lg.k), lg.goal)}/${lg.goal} ${KINDS.find((x) => x.k === lg.k).label.toLowerCase()}`}</span></span>
+                  <span className="e" aria-hidden="true">{lg.icon}</span>
+                  <span><b>{lg.name}</b></span><span className="small">{on ? '¡Desbloqueado!' : `${Math.min(total(data.log, pid, lg.k), lg.goal)}/${lg.goal} ${KINDS.find((x) => x.k === lg.k).label.toLowerCase()}`}</span>
                 </div>
               ) })}
             </div>
@@ -105,7 +105,7 @@ export default function Rankings() {
           <div>Más salidas: <b>{list(S.salidas)}</b></div>
           <div>Más besos: <b>{list(S.besos)}</b></div>
           <div>Más cubatas: <b>{list(S.cubatas)}</b></div>
-          <div>Logro más difícil: <b>{S.logro ? `${S.logro.lg.icon} ${S.logro.lg.name} (${list(S.logro.who)})` : 'Todavía ninguno'}</b></div>
+          <div>Logro más difícil: <b>{S.logro ? `${S.logro.lg.icon} ${S.logro.lg.name} (${list(S.logro.who)})` : 'Ninguno todavía'}</b></div>
         </div>
         <label style={{ display: 'grid', gap: 6, marginTop: 14 }}>
           <span className="muted small">Anécdota del año</span>

@@ -53,66 +53,71 @@ export default function Hoy() {
     if (await ask(`¿Sacar ${b.name} de la lista?`, 'Sacar')) update('boliches', (bs) => bs.filter((x) => x.id !== b.id))
   }
   const reset = async () => {
-    if (await ask('¿Empezar una votación nueva? Se borran los votos (quedan los lugares y boliches).', 'Empezar de cero'))
+    if (await ask('¿Arrancamos de cero? Se borran los votos; los lugares y boliches quedan.', 'Borrar votos'))
       patch((h) => ({ ...h, votes: {}, previas: h.previas.map((p) => ({ ...p, votes: [] })) }))
   }
-  const sum = (a, f) => (a.length ? a.map(f).join(' / ') + (a.length > 1 ? ' (empate)' : '') : 'A votar')
+  const sum = (a, f) => (a.length ? a.map(f).join(' o ') : '')
+  const voters = new Set([...Object.entries(hoy.votes).filter(([, v]) => v).map(([k]) => k), ...hoy.previas.flatMap((p) => p.votes)]).size
+  const fecha = new Date().toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })
+  const prev = sum(topP, (p) => p.place), bol = sum(topB, (b) => b.name)
 
   return (
     <>
-      <h1>Hoy</h1>
-      <p className="lead">Lo que tenemos decidido, en vivo.</p>
-      <div className="result" style={{ display: 'block' }}>
-        <div className="muted small">Previa</div>
-        <b style={{ fontSize: 22 }}>{sum(topP, (p) => p.place)}</b>
-        <div className="muted small" style={{ marginTop: 10 }}>Boliche</div>
-        <b style={{ fontSize: 22 }}>{sum(topB, (b) => b.name)}</b>
-      </div>
+      <section className="ticket" aria-label="Lo que va ganando hoy">
+        <div className="ticket-top"><b>Hoy</b><span>{fecha}</span></div>
+        <div className="ticket-line"><small>Previa{topP.length > 1 ? ' (empate)' : ''}</small><strong className={prev ? '' : 'tbd'}>{prev || 'A definir'}</strong></div>
+        <div className="ticket-line"><small>Boliche{topB.length > 1 ? ' (empate)' : ''}</small><strong className={bol ? '' : 'tbd'}>{bol || 'A definir'}</strong></div>
+        <div className="ticket-stub">
+          <span>{voters ? `${voters} ${voters === 1 ? 'votó' : 'votaron'}` : 'Nadie votó todavía'}</span>
+          <span>Admite a todo el grupo</span>
+        </div>
+      </section>
+      {!me && <p className="hint">Elegí quién sos arriba a la derecha y votá.</p>}
 
-      <Previa night={hoy} patch={patch} title="Votá la previa" />
+      <Previa night={hoy} patch={patch} title="¿Dónde es la previa?" />
 
       <section className="sec">
-        <h2>Votá el boliche</h2>
-        {data.boliches.map((b) => (
-          <div className="li" key={b.id} style={{ display: 'block' }}>
-            <div className="row" style={{ flexWrap: 'nowrap' }}>
-              {photo(b) && <img src={photo(b)} alt="" width="44" height="44" style={{ borderRadius: 10, objectFit: 'cover' }} />}
-              <span className="grow"><b>{b.name}</b>
-                <a className="muted small row" style={{ gap: 4 }} href={mapLink(b)} target="_blank" rel="noreferrer"><MapPin size={12} /> {b.zone || 'Mapa'}</a>
-              </span>
-              <button disabled={!me} className={`pill ${hoy.votes[me] === b.id ? 'on' : ''}`}
+        <h2>¿A qué boliche?</h2>
+        {data.boliches.map((b) => {
+          const on = hoy.votes[me] === b.id
+          return (
+            <div className={`vote ${on ? 'on' : ''}`} key={b.id} style={{ '--p': max ? count(b) / max : 0 }}>
+              <button className="vote-main" disabled={!me} aria-pressed={on}
                 onClick={() => patch((h) => ({ ...h, votes: { ...h.votes, [me]: h.votes[me] === b.id ? null : b.id } }))}>
-                {count(b)} {count(b) === 1 ? 'voto' : 'votos'}
+                {photo(b) ? <img src={photo(b)} alt="" width="52" height="52" /> : <span className="avatar" aria-hidden="true">{b.name[0]}</span>}
+                <span className="grow"><b>{b.name}</b></span>
+                <span className="vote-n" aria-label={`${count(b)} ${count(b) === 1 ? 'voto' : 'votos'}`}>{count(b)}</span>
               </button>
-              <button className="ib" aria-label={`Sacar ${b.name}`} onClick={() => removeBoliche(b)}><Trash2 size={15} /></button>
+              <a className="ib" href={mapLink(b)} target="_blank" rel="noreferrer" aria-label={`Cómo llegar a ${b.name}`}><MapPin size={18} /></a>
+              <button className="ib" aria-label={`Sacar ${b.name}`} onClick={() => removeBoliche(b)}><Trash2 size={16} /></button>
             </div>
-            <div className="bar"><i style={{ width: max ? `${(count(b) / max) * 100}%` : 0 }} /></div>
-          </div>
-        ))}
-        {!me && <p className="muted small" style={{ marginTop: 10 }}>Elegí quién sos arriba para votar.</p>}
+          )
+        })}
         <form className="add" onSubmit={addBoliche}>
-          <input value={bName} onChange={(e) => setBName(e.target.value)} placeholder="¿Otro boliche? Escribí el nombre" />
+          <input value={bName} onChange={(e) => setBName(e.target.value)} placeholder="¿Otro boliche? Escribí el nombre" aria-label="Nombre del boliche" />
           <button className="btn sm">Sumar</button>
         </form>
       </section>
 
       <section className="sec">
         <h2>¿Venís de afuera?</h2>
+        <p className="muted small">Si no sos del grupo, entrá con tu nombre y votá igual.</p>
         {guests.map((g) => (
           <div className="li" key={g.id}>
+            <span className="avatar" aria-hidden="true" style={{ '--av': 'var(--gold)' }}>{g.name[0]}</span>
             <span className="grow">{g.name} <span className="tag">invitado</span></span>
-            <button className="ib" aria-label="Quitar invitado" onClick={() => removeGuest(g)}><Trash2 size={15} /></button>
+            <button className="ib" aria-label={`Quitar a ${g.name}`} onClick={() => removeGuest(g)}><Trash2 size={16} /></button>
           </div>
         ))}
         <form className="add" onSubmit={joinAsGuest}>
-          <input value={guestName} onChange={(e) => { setGuestName(e.target.value); setGuestErr('') }} placeholder="Poné tu nombre para votar" />
+          <input value={guestName} onChange={(e) => { setGuestName(e.target.value); setGuestErr('') }} placeholder="Tu nombre" aria-label="Tu nombre" />
           <button className="btn sm">Entrar</button>
         </form>
         {guestErr && <p className="small err" role="alert" style={{ marginTop: 8 }}>{guestErr}</p>}
       </section>
 
-      <div className="row" style={{ marginTop: 28 }}>
-        <button className="btn" onClick={() => setSharing(true)}><MessageCircle size={16} /> Compartir por WhatsApp</button>
+      <div className="row" style={{ marginTop: 32 }}>
+        <button className="btn" onClick={() => setSharing(true)}><MessageCircle size={18} /> Mandarlo al grupo</button>
         <button className="btn ghost" onClick={reset}><RotateCcw size={16} /> Votación nueva</button>
       </div>
       <div className="sec"><LocalNote /></div>
