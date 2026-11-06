@@ -70,7 +70,7 @@ export default function Grupo() {
 
       <ListSection title="Anécdotas" addLabel="Nueva anécdota" items={data.stories} onChange={set('stories')}
         fields={[{ name: 'title', label: 'Título', required: true }, { name: 'date', label: 'Cuándo', type: 'date' }, { name: 'text', label: 'La historia', type: 'textarea' }]}
-        render={(a) => <><b style={{ fontSize: 17 }}>{a.title}</b> {a.date && <span className="muted small">{new Date(a.date + 'T12:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}<p className="muted" style={{ marginTop: 4, maxWidth: '60ch' }}>{a.text}</p></>} />
+        render={(a) => <><b style={{ fontSize: 17 }}>{a.title}</b> {a.date && <span className="muted small" style={{ display: 'block' }}>{new Date(a.date + 'T12:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}<p className="muted" style={{ marginTop: 4, maxWidth: '60ch' }}>{a.text}</p></>} />
 
       <Backup />
 

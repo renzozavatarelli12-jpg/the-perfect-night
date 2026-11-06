@@ -48,7 +48,7 @@
 .qq-btn.ghost { background: transparent; border: 1px solid var(--line); box-shadow: none; color: #d8d1ea; }
 .qq-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .qq-chip { display: inline-flex; align-items: center; gap: 6px; padding: 8px 8px 8px 14px; border-radius: 999px; background: #2a2050; color: #fff; font-weight: 600; animation: qq-pop .3s both; }
-.qq-chip button { color: var(--l); display: grid; place-items: center; padding: 2px; }
+.qq-chip button { color: var(--l); display: grid; place-items: center; min-width: 36px; min-height: 36px; margin: -6px -4px -6px 0; border-radius: 50%; }
 .qq-board { list-style: none; display: grid; gap: 8px; }
 .qq-board li { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 18px; background: #14111a; border: 1px solid var(--line); animation: qq-pop .4s both; }
 .qq-board li:first-child { border-color: var(--c); background: linear-gradient(90deg, rgba(255, 122, 102, .16), #14111a); }
