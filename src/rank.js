@@ -26,12 +26,11 @@ export const total = (log, m, k, from = '0000', to = '9999-99') =>
   log.reduce((s, e) => (e.m === m && e.k === k && e.d >= from && e.d <= to + '-99' ? s + e.n : s), 0)
 export const inYear = (log, m, k, y) => total(log, m, k, y, y)
 
-// +1 / -1. Un solo registro por integrante, estadística y día (no se duplica); una salida cuenta una vez por día.
+// +1 / -1. Un solo registro por integrante, estadística y día; si ya hay uno de hoy, se le suma.
 export function bump(log, m, k, d, delta) {
   const mine = log.filter((e) => e.m === m && e.k === k)
   const today = mine.find((e) => e.d === d)
   if (delta > 0) {
-    if (k === 'salidas' && today) return log
     return today ? log.map((e) => (e === today ? { ...e, n: e.n + 1 } : e)) : [...log, { id: uid(), m, k, d, n: 1 }]
   }
   const t = today || [...mine].sort((a, b) => (a.d < b.d ? 1 : -1))[0]
