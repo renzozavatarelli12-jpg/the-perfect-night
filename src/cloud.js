@@ -1,17 +1,19 @@
-// Conexión con Supabase sin librerías: 3 funciones (tpn_join / tpn_pull / tpn_push) y un aviso en tiempo real.
-// La clave publicable está hecha para estar en la web: sola no puede leer ni escribir nada (todo pide la sesión del grupo).
+// Conexión con Supabase sin librerías: funciones del servidor (tpn_*) y un aviso en tiempo real.
+// La clave publicable está hecha para estar en la web: sola no puede leer ni escribir nada (todo pide una sesión).
 const URL_ = import.meta.env?.VITE_SUPABASE_URL || 'https://xcligofglpsrtruziqea.supabase.co'
 const KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || 'sb_publishable_-MXl3P_DU9WYK76gOr2nvQ_gVHO1Ao5'
 const T = 'tpn-v2-token'
 
-// Versión compartida prendida para todos (con ON = false, solo se prendía por celu con ?nube=1 o el link de invitación #g=código).
+// Versión compartida prendida para todos (con ON = false, solo se prendía por celu con ?nube=1 o con un link).
 const ON = true
 const ls = (() => { try { return localStorage } catch { return null } })()
 const q = new URLSearchParams(location.search)
 if (q.has('nube')) ls?.setItem('tpn-cloud', q.get('nube'))
-export const invite = decodeURIComponent(location.hash.match(/[#&]g=([^&]+)/)?.[1] || '')
-if (invite) { ls?.setItem('tpn-cloud', '1'); history.replaceState(null, '', location.pathname + location.search) } // el código no queda en la barra
+// Link de invitación / para pedir entrar: #i=CODIGO (los viejos #g=CODIGO también). El código no queda en la barra.
+export const linkCode = decodeURIComponent(location.hash.match(/[#&][ig]=([^&]+)/)?.[1] || '')
+if (linkCode) { ls?.setItem('tpn-cloud', '1'); history.replaceState(null, '', location.pathname + location.search) }
 export const ONLINE = ON || ls?.getItem('tpn-cloud') === '1'
+export const inviteUrl = (code) => `${location.origin}${import.meta.env?.BASE_URL ?? '/'}#i=${code}`
 
 async function rpc(fn, body) {
   const r = await fetch(`${URL_}/rest/v1/rpc/${fn}`, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
@@ -20,19 +22,21 @@ async function rpc(fn, body) {
   return j
 }
 
-export const api = {
-  token: () => ls?.getItem(T),
-  logout: () => ls?.removeItem(T),
-  async join(code) {
-    try {
-      const r = await rpc('tpn_join', { p_code: code })
-      if (r.token) ls.setItem(T, r.token)
-      return r
-    } catch { return { error: 'net' } }
-  },
-  pull: (since) => rpc('tpn_pull', { p_token: api.token(), p_since: since }),
-  push: (changes) => rpc('tpn_push', { p_token: api.token(), p_changes: changes }),
-}
+export const token = () => ls?.getItem(T)
+export const setToken = (t) => (t ? ls?.setItem(T, t) : ls?.removeItem(T))
+// Llama una función del servidor con la sesión de este celu.
+export const call = (fn, args = {}) => rpc(fn, { p_token: token(), ...args })
+export const callPub = (fn, args) => rpc(fn, args) // sin sesión (mirar un link, entrar desde otro celu)
+
+// Lo que necesita src/sync.js para un grupo.
+// legacy = celu que entró con el código viejo y todavía no tiene persona confirmada: usa las funciones de siempre.
+export const groupApi = (gid, legacy) => ({
+  token,
+  logout: () => setToken(null),
+  join: async () => ({}),
+  pull: (since) => (legacy ? call('tpn_pull', { p_since: since }) : call('tpn_gpull', { p_group: gid, p_since: since })),
+  push: (changes) => (legacy ? call('tpn_push', { p_changes: changes }) : call('tpn_gpush', { p_group: gid, p_changes: changes })),
+})
 
 // Aviso "cambió algo" (Supabase Realtime, protocolo Phoenix). Si se corta, reconecta; mientras tanto el chequeo periódico cubre.
 export function listen(topic, onChange) {

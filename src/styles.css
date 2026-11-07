@@ -161,3 +161,18 @@ label { display: grid; gap: 6px; } label span { font-size: 13px; color: var(--mu
 .join { padding-top: calc(48px + env(safe-area-inset-top)); }
 .join .logo { margin-bottom: 40px; }
 @media (min-width: 800px) { .sync-bar { top: 80px; padding: 8px 32px; } }
+
+/* grupos */
+.gbar { margin: -4px 0 14px; }
+.gchip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px 0 6px; border-radius: 999px; background: var(--coal); color: var(--paper); font-size: 14px; font-weight: 600; position: relative; }
+.gchip img { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
+.gchip:not(:has(img)) { padding-left: 14px; }
+.badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--flare); color: var(--black); font-size: 12px; font-style: normal; font-weight: 700; }
+.cover { width: 100%; max-height: 180px; object-fit: cover; border-radius: var(--r); margin-bottom: 14px; }
+.gpick { width: 100%; text-align: left; border-radius: 16px; padding: 8px; }
+.gpick.on { outline: 2px solid var(--lav); }
+.gpick img { border-radius: 50%; object-fit: cover; }
+.admin h3 { margin: 22px 0 8px; font-size: 16px; display: flex; gap: 8px; align-items: center; }
+.admin label select { display: block; }
+.admin .made { margin-top: 12px; padding: 12px; border-radius: 14px; background: var(--coal); display: grid; gap: 10px; }
+.ghead .row { flex-wrap: nowrap; }

@@ -87,7 +87,9 @@ export function createEngine({ api, ls, prefix = 'tpn-v2', wait = setTimeout }) 
 
   const fail = (e, n) => {
     if (e.code === 'tpn_session') { api.logout(); st = { ...st, needJoin: true }; return }
+    if (e.code === 'tpn_forbidden' || e.code === 'tpn_claim' || e.code === 'tpn_upgraded') { st = { ...st, needJoin: true }; return } // ya no es de este grupo: la cuenta se vuelve a fijar
     if (e.code === 'tpn_invalid' || e.code === 'tpn_full') { ops.splice(0, n); st = { ...st, notice: 'Un cambio no se pudo guardar. Probá de nuevo.' }; return }
+    if (e.code === 'tpn_denied') { ops.splice(0, n); st = { ...st, notice: 'Eso es de otra persona del grupo: solo lo puede cambiar ella o un admin.' }; return }
     st = { ...st, online: false }
     retryMs = Math.min(retryMs ? retryMs * 2 : 2000, 30000)
     clearTimeout(timer); timer = wait(() => eng.sync(), retryMs)
