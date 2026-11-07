@@ -1,15 +1,42 @@
 import { useState } from 'react'
 
-// fields: [{ name, label, type?: text|textarea|select|date|time|url, options?: [[value,label]], required? }]
+// Foto elegida -> cuadrado de 128px en JPEG chico (cabe en la fila del integrante, ~5-8 KB).
+async function chica(file) {
+  const img = await createImageBitmap(file)
+  const c = document.createElement('canvas'); c.width = c.height = 128
+  const s = Math.min(img.width, img.height)
+  c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 128, 128)
+  let out = c.toDataURL('image/jpeg', 0.7)
+  if (out.length > 12000) out = c.toDataURL('image/jpeg', 0.45)
+  return out
+}
+
+// fields: [{ name, label, type?: text|textarea|select|date|time|url|photo, options?: [[value,label]], required? }]
 export default function FormSheet({ title, fields, initial = {}, onSave, onClose }) {
   const [v, setV] = useState(() => ({ ...Object.fromEntries(fields.filter((f) => f.type === 'select').map((f) => [f.name, f.options[0][0]])), ...initial }))
   const set = (name) => (e) => setV({ ...v, [name]: e.target.value })
+  const [perr, setPerr] = useState('')
+  const pick = async (e) => {
+    const f = e.target.files[0]; e.target.value = ''
+    if (!f) return
+    try { setV({ ...v, photo: await chica(f) }); setPerr('') } catch { setPerr('No pude leer esa foto. Probá con otra.') }
+  }
   const submit = (e) => { e.preventDefault(); onSave(v); onClose() }
   return (
     <div className="overlay" onClick={onClose}>
       <form className="sheet" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
         <h3>{title}</h3>
-        {fields.map((f) => (
+        {fields.map((f) => f.type === 'photo' ? (
+          <div key={f.name}>
+            <span className="small muted">{f.label}</span>
+            <div className="row" style={{ marginTop: 6 }}>
+              {v.photo ? <img className="avatar" src={v.photo} alt="" /> : <span className="avatar" aria-hidden="true">{(v.name || '?')[0]}</span>}
+              <label className="btn ghost sm" style={{ cursor: 'pointer' }}>{v.photo ? 'Cambiar foto' : 'Elegir foto'}<input type="file" accept="image/*" hidden onChange={pick} /></label>
+              {v.photo && <button type="button" className="btn ghost sm" onClick={() => setV({ ...v, photo: '' })}>Sacar</button>}
+            </div>
+            {perr && <p className="small err" role="alert">{perr}</p>}
+          </div>
+        ) : (
           <label key={f.name}>
             <span>{f.label}</span>
             {f.type === 'textarea' ? (
