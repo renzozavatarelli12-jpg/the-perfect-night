@@ -46,7 +46,7 @@ export default function FormSheet({ title, fields, initial = {}, onSave, onClose
                 {f.options.map(([val, lab]) => <option key={val} value={val}>{lab}</option>)}
               </select>
             ) : (
-              <input type={f.type || 'text'} value={v[f.name] || ''} onChange={set(f.name)} required={f.required} />
+              <input type={f.type || 'text'} value={v[f.name] || ''} onChange={set(f.name)} required={f.required} maxLength={f.max} />
             )}
           </label>
         ))}
