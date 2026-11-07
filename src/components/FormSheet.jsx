@@ -16,10 +16,10 @@ export default function FormSheet({ title, fields, initial = {}, onSave, onClose
   const [v, setV] = useState(() => ({ ...Object.fromEntries(fields.filter((f) => f.type === 'select').map((f) => [f.name, f.options[0][0]])), ...initial }))
   const set = (name) => (e) => setV({ ...v, [name]: e.target.value })
   const [perr, setPerr] = useState('')
-  const pick = async (e) => {
+  const pick = (name) => async (e) => {
     const f = e.target.files[0]; e.target.value = ''
     if (!f) return
-    try { setV({ ...v, photo: await chica(f) }); setPerr('') } catch { setPerr('No pude leer esa foto. Probá con otra.') }
+    try { const src = await chica(f); setV((x) => ({ ...x, [name]: src })); setPerr('') } catch { setPerr('No pude leer esa foto. Probá con otra.') }
   }
   const submit = (e) => { e.preventDefault(); onSave(v); onClose() }
   return (
@@ -30,9 +30,9 @@ export default function FormSheet({ title, fields, initial = {}, onSave, onClose
           <div key={f.name}>
             <span className="small muted">{f.label}</span>
             <div className="row" style={{ marginTop: 6 }}>
-              {v.photo ? <img className="avatar" src={v.photo} alt="" /> : <span className="avatar" aria-hidden="true">{(v.name || '?')[0]}</span>}
-              <label className="btn ghost sm" style={{ cursor: 'pointer' }}>{v.photo ? 'Cambiar foto' : 'Elegir foto'}<input type="file" accept="image/*" hidden onChange={pick} /></label>
-              {v.photo && <button type="button" className="btn ghost sm" onClick={() => setV({ ...v, photo: '' })}>Sacar</button>}
+              {v[f.name] ? <img className="avatar" src={v[f.name]} alt="" /> : <span className="avatar" aria-hidden="true">{(v.name || '?')[0]}</span>}
+              <label className="btn ghost sm" style={{ cursor: 'pointer' }}>{v[f.name] ? 'Cambiar foto' : 'Elegir foto'}<input type="file" accept="image/*" hidden onChange={pick(f.name)} /></label>
+              {v[f.name] && <button type="button" className="btn ghost sm" onClick={() => setV({ ...v, [f.name]: '' })}>Sacar</button>}
             </div>
             {perr && <p className="small err" role="alert">{perr}</p>}
           </div>

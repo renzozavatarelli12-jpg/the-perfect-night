@@ -2,7 +2,8 @@ import { NavLink, Outlet, Link, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { Flame, Users, Gamepad2, Trophy } from 'lucide-react'
 import { useStore } from '../store'
-import { Join, SyncDot, SyncBar, Migrate } from './Cloud'
+import { SyncDot, SyncBar, Migrate } from './Cloud'
+import { GroupChip } from './Account'
 
 const tabs = [
   ['/', 'Hoy', Flame],
@@ -12,10 +13,9 @@ const tabs = [
 ]
 
 export default function Layout() {
-  const { data, me, setMe, online, sync } = useStore()
+  const { data, me, setMe, online, legacyCopy, canAct = () => true } = useStore()
   const { pathname } = useLocation()
   useEffect(() => { window.scrollTo(0, 0) }, [pathname])
-  if (online && sync.needJoin) return <Join />
   return (
     <>
       <header className="top">
@@ -29,7 +29,7 @@ export default function Layout() {
         </nav>
         <select className="me" value={me || ''} onChange={(e) => setMe(e.target.value || null)} aria-label="¿Quién sos?">
           <option value="">¿Quién sos?</option>
-          {data.members.filter((m) => !m.guest).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+          {data.members.filter((m) => !m.guest && (canAct(m.id) || m.id === me)).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
           {data.members.some((m) => m.guest) && (
             <optgroup label="Invitados">
               {data.members.filter((m) => m.guest).map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
@@ -38,8 +38,8 @@ export default function Layout() {
         </select>
       </header>
       {online && <SyncBar />}
-      {online && <Migrate />}
-      <main className="wrap"><Outlet /></main>
+      {legacyCopy && <Migrate />}
+      <main className="wrap">{online && <div className="gbar"><GroupChip /></div>}<Outlet /></main>
     </>
   )
 }

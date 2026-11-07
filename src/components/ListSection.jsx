@@ -6,7 +6,7 @@ import { uid } from '../utils'
 import { useConfirm } from './Confirm'
 
 // Lista editable genérica: agregar / editar / borrar. `render(item)` dibuja el contenido.
-export default function ListSection({ title, hint, items, fields, onChange, render, addLabel = 'Agregar', canAdd = true, canDelete = true, className = '' }) {
+export default function ListSection({ title, hint, items, fields, onChange, render, addLabel = 'Agregar', canAdd = true, canDelete = true, editable = () => true, className = '' }) {
   const [sheet, setSheet] = useState(null)
   const ask = useConfirm()
   const open = (item) =>
@@ -26,8 +26,8 @@ export default function ListSection({ title, hint, items, fields, onChange, rend
         {items.map((item) => (
           <div className="li" key={item.id}>
             <div className="grow">{render(item)}</div>
-            <button className="ib" aria-label="Editar" onClick={() => open(item)}><Pencil size={16} /></button>
-            {canDelete && (
+            {editable(item) && <button className="ib" aria-label="Editar" onClick={() => open(item)}><Pencil size={16} /></button>}
+            {canDelete && editable(item) && (
               <button className="ib" aria-label="Borrar" onClick={async () => (await ask('¿Borrar este elemento?', 'Borrar')) && onChange(items.filter((i) => i.id !== item.id))}>
                 <Trash2 size={16} />
               </button>

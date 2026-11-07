@@ -2,40 +2,8 @@ import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { useStore, localData } from '../store'
-import { invite } from '../cloud'
 import { seed } from '../data/seed'
 import { downloadBackup } from '../utils'
-
-const ERR = { code: 'Ese código no es. Fijate en el grupo de WhatsApp.', rate: 'Demasiados intentos. Esperá 15 minutos y probá de nuevo.', net: 'No hay conexión. Probá de nuevo en un rato.' }
-
-// Pantalla de entrada: se pide el código una sola vez por celu. Lo valida el servidor.
-export function Join() {
-  const { eng } = useStore()
-  const [code, setCode] = useState(invite)
-  const [err, setErr] = useState('')
-  const [busy, setBusy] = useState(false)
-  const go = async (e) => {
-    e.preventDefault()
-    if (!code.trim() || busy) return
-    setBusy(true); setErr('')
-    const r = await eng.join(code)
-    setBusy(false)
-    if (r) setErr(ERR[r] || ERR.net)
-  }
-  return (
-    <main className="wrap join">
-      <p className="logo">the perfect night<i>.</i></p>
-      <h1>¿Sos del grupo?</h1>
-      <p className="lead">Poné el código del grupo. Se pide una sola vez en este celu.</p>
-      <form className="add" onSubmit={go}>
-        <input value={code} onChange={(e) => { setCode(e.target.value); setErr('') }} placeholder="Código del grupo" aria-label="Código del grupo"
-          autoCapitalize="none" autoCorrect="off" autoComplete="off" spellCheck="false" />
-        <button className="btn" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</button>
-      </form>
-      {err && <p className="small err" role="alert" style={{ marginTop: 10 }}>{err}</p>}
-    </main>
-  )
-}
 
 // Punto en el header: verde = al día, coral = cambios sin subir, gris = sin conexión.
 export function SyncDot() {
