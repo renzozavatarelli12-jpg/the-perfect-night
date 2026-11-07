@@ -4,18 +4,15 @@ import { useStore } from '../store'
 import LocalNote from '../components/LocalNote'
 import { useConfirm } from '../components/Confirm'
 import ListSection from '../components/ListSection'
-import { today, makeBackup, parseBackup } from '../utils'
+import { downloadBackup, parseBackup } from '../utils'
 
 function Backup() {
-  const { data, me, replaceAll } = useStore()
+  const { data, me, replaceAll, online } = useStore()
   const file = useRef()
   const ask = useConfirm()
   const [msg, setMsg] = useState(null)
   const exportar = () => {
-    const url = URL.createObjectURL(new Blob([JSON.stringify(makeBackup(data, me), null, 2)], { type: 'application/json' }))
-    const a = Object.assign(document.createElement('a'), { href: url, download: `the-perfect-night-${today()}.json` })
-    document.body.append(a); a.click(); a.remove()
-    setTimeout(() => URL.revokeObjectURL(url), 1000)
+    downloadBackup(data, me)
     setMsg({ ok: true, text: 'Copia descargada. Guardala bien (por ejemplo, mandátela por WhatsApp).' })
   }
   const importar = async (e) => {
@@ -25,6 +22,11 @@ function Backup() {
     try { r = f.size > 5e6 ? { error: 'El archivo es demasiado grande.' } : parseBackup(await f.text()) } catch { r = { error: 'No se pudo leer el archivo.' } }
     if (r.error) return setMsg({ ok: false, text: `${r.error} No se cambió nada.` })
     const c = (k) => r.data[k].length
+    if (online) { // con la nube no se reemplaza nada: se suma lo que el grupo no tiene
+      if (!(await ask('Se suma al grupo lo de la copia que el grupo no tenga. No se borra ni se pisa nada. ¿Seguimos?', 'Sumar'))) return setMsg({ ok: false, text: 'Cancelado. No se cambió nada.' })
+      const { added, clash } = replaceAll(r.data, r.me)
+      return setMsg({ ok: true, text: `${added === 0 ? 'No había nada nuevo para sumar' : added === 1 ? 'Se sumó 1 cosa' : `Se sumaron ${added} cosas`}.${clash ? ` ${clash === 1 ? '1 ya estaba distinta en el grupo: quedó la del grupo.' : `${clash} ya estaban distintas en el grupo: quedaron las del grupo.`}` : ''}` })
+    }
     if (!(await ask(`Esto REEMPLAZA todo lo que tenés ahora por la copia (${c('boliches')} boliches, ${c('members')} integrantes). Tip: exportá una copia de lo actual antes. ¿Reemplazar?`, 'Reemplazar')))
       return setMsg({ ok: false, text: 'Importación cancelada. No se cambió nada.' })
     replaceAll(r.data, r.me)
@@ -34,6 +36,7 @@ function Backup() {
     <section className="sec">
       <h2>Copia de seguridad</h2>
       <LocalNote />
+      {online && <p className="note">Lo del grupo ya se guarda online para todos. Esto es por las dudas.</p>}
       <div className="row" style={{ marginTop: 12 }}>
         <button className="btn ghost sm" onClick={exportar}><Download size={14} /> Exportar copia</button>
         <button className="btn ghost sm" onClick={() => file.current.click()}><Upload size={14} /> Importar copia</button>
@@ -47,7 +50,7 @@ function Backup() {
 const AV = ['var(--lav)', 'var(--flare)', 'var(--gold)', '#9FD8C4', '#E7A6D6', '#A9C4F5'] // un color por integrante
 
 export default function Grupo() {
-  const { data, update, reset } = useStore()
+  const { data, update, reset, online } = useStore()
   const ask = useConfirm()
   const set = (k) => (v) => update(k, v)
   const fixed = data.members.filter((m) => !m.guest)
@@ -74,11 +77,11 @@ export default function Grupo() {
 
       <Backup />
 
-      <div className="sec">
+      {!online && <div className="sec">
         <button className="btn ghost sm" onClick={async () => (await ask('Esto borra todo lo que cargaste y vuelve a los datos de ejemplo. No hay vuelta atrás.', 'Restaurar')) && reset()}>
           Restaurar datos de ejemplo
         </button>
-      </div>
+      </div>}
     </>
   )
 }

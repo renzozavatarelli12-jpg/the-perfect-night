@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft, Crown, X } from 'lucide-react'
 import './quien.css'
@@ -6,7 +6,16 @@ import { useStore } from '../store'
 import ListSection from '../components/ListSection'
 import { useConfirm } from '../components/Confirm'
 import { shuffle, derange, tally } from '../quien'
-import { winners } from '../utils'
+import { winners, uid, today } from '../utils'
+
+// La partida en curso queda guardada en este celu: si se recarga o se cambia de pestaña, sigue donde estaba.
+const KEEP = 'tpn-quien'
+const kept = (() => { try { return JSON.parse(localStorage.getItem(KEEP)) || {} } catch { return {} } })()
+function useKept(k, init) {
+  const [v, set] = useState(() => (k in kept ? kept[k] : init))
+  useEffect(() => { kept[k] = v; try { localStorage.setItem(KEEP, JSON.stringify(kept)) } catch { /* sin espacio: solo en memoria */ } }, [k, v])
+  return [v, set]
+}
 
 const CATS = ['Personalidad', 'Boliches y salidas', 'Relaciones y situaciones incómodas', 'Amistades', 'Situaciones absurdas', 'Anécdotas', 'Humor interno']
 const MIN = 3, MAX = 10
@@ -27,21 +36,27 @@ const Board = ({ names, scores, add }) => (
 export default function Quien() {
   const { data, update } = useStore()
   const ask = useConfirm()
-  const [ph, setPh] = useState('cover')
-  const [names, setNames] = useState([])
+  const [ph, setPh] = useKept('ph', 'cover')
+  const [names, setNames] = useKept('names', [])
   const [draft, setDraft] = useState('')
   const [err, setErr] = useState('')
-  const [R, setR] = useState(null) // ronda: {t: a quién interpreta cada uno, q, answers, order, votes, res}
-  const [i, setI] = useState(0)
+  const [R, setR] = useKept('R', null) // ronda: {t: a quién interpreta cada uno, q, answers, order, votes, res}
+  const [i, setI] = useKept('i', 0)
   const [flip, setFlip] = useState(false)
   const [text, setText] = useState('')
   const [picks, setPicks] = useState({})
-  const [scores, setScores] = useState([])
-  const [used, setUsed] = useState([])
-  const [add, setAdd] = useState([])
+  const [scores, setScores] = useKept('scores', [])
+  const [used, setUsed] = useKept('used', [])
+  const [add, setAdd] = useKept('add', [])
+  const [saved, setSaved] = useKept('saved', false)
   const n = names.length
   const go = (p, idx = 0) => { setPh(p); setI(idx); setFlip(false); setText(''); setPicks({}) }
-  const reset = () => { setNames([]); setR(null); setScores([]); setUsed([]); setAdd([]); go('cover') }
+  const reset = () => { setNames([]); setR(null); setScores([]); setUsed([]); setAdd([]); setSaved(false); go('cover') }
+  useEffect(() => { // el resultado queda para el grupo (se ve en Minijuegos)
+    if (ph !== 'final' || saved || !n) return
+    update('partidas', (l) => [...l, { id: uid(), game: 'quien', d: today(), scores: names.map((name, k) => ({ name, pts: scores[k] ?? 0 })) }])
+    setSaved(true)
+  }, [ph]) // eslint-disable-line react-hooks/exhaustive-deps
   const exit = async () => { if (await ask('¿Salir de la partida? Se pierde el puntaje.', 'Salir')) reset() }
 
   const addName = (e) => {

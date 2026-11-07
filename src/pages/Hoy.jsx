@@ -12,7 +12,7 @@ const LOGO = { b1: 'cruza-polo', b2: 'cruza-recoleta', b3: 'la-tincho-fierro', b
 const photo = (b) => b.photo || (LOGO[b.id] ? `${import.meta.env.BASE_URL}boliches/${LOGO[b.id]}.jpg` : '')
 
 export default function Hoy() {
-  const { data, update, me, setMe } = useStore()
+  const { data, update, me, setMe, online } = useStore()
   const ask = useConfirm()
   const [sharing, setSharing] = useState(false)
   const [guestName, setGuestName] = useState('')
@@ -121,7 +121,7 @@ export default function Hoy() {
         <button className="btn ghost" onClick={reset}><RotateCcw size={16} /> Votación nueva</button>
       </div>
       <div className="sec"><LocalNote /></div>
-      {sharing && <ShareSheet initial={hoyMessage(hoy, data, location.origin + import.meta.env.BASE_URL)} onClose={() => setSharing(false)} />}
+      {sharing && <ShareSheet initial={hoyMessage(hoy, data, location.origin + import.meta.env.BASE_URL, online)} onClose={() => setSharing(false)} />}
     </>
   )
 }

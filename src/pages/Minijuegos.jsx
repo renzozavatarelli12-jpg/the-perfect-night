@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import './quien.css'
+import { useStore } from '../store'
 
 const GAMES = [
   ['quien', '🎭', '¿Quién es quién?', 'Respondé como otro del grupo y que adivinen a quién imitás', 'mg-quien'],
@@ -7,6 +8,8 @@ const GAMES = [
 ]
 
 export default function Minijuegos() {
+  const { data } = useStore()
+  const last = [...(data.partidas || [])].reverse().slice(0, 5)
   return (
     <>
       <h1>Minijuegos</h1>
@@ -20,6 +23,20 @@ export default function Minijuegos() {
           </Link>
         ))}
       </div>
+      {last.length > 0 && (
+        <section className="sec">
+          <h2>Últimas partidas</h2>
+          {last.map((p) => {
+            const top = [...p.scores].sort((a, b) => b.pts - a.pts)
+            return (
+              <div className="li" key={p.id}>
+                <span className="grow"><b>🎭 {top.filter((x) => x.pts === top[0]?.pts).map((x) => x.name).join(' y ')}</b> <span className="muted small" style={{ display: 'block' }}>{top.map((x) => `${x.name} ${x.pts}`).join(' · ')}</span></span>
+                <span className="muted small">{new Date(p.d + 'T12:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short' })}</span>
+              </div>
+            )
+          })}
+        </section>
+      )}
     </>
   )
 }

@@ -13,7 +13,7 @@ export default function Rankings() {
   const nowY = today().slice(0, 4)
   const years = [...new Set([nowY, ...data.log.map((e) => e.d.slice(0, 4))])].sort().reverse()
   const [year, setYear] = useState(nowY)
-  const set = (m, k, d) => update('log', (l) => bump(l, m, k, today(), d))
+  const set = (m, k, d) => update('log', (l) => bump(l, m, k, today(), d), true) // true: si dos suman a la vez, cuentan los dos
   const S = season(data.log, members, year)
   const p = members.find((m) => m.id === pid)
   const ana = data.flama[year] || ''
