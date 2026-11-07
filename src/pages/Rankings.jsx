@@ -82,7 +82,7 @@ export default function Rankings() {
                 <button className="bn-step" aria-label={`Sumar ${x.label}`} onClick={() => set(pid, x.k, 1)}>+</button>
               </div>
             ))}
-            <p className="muted small" style={{ marginTop: 8 }}>El + anota en la fecha de hoy (la salida, una vez por día). El − borra el último que cargaste.</p>
+            <p className="muted small" style={{ marginTop: 8 }}>El + anota en la fecha de hoy. El − borra el último que cargaste.</p>
             <div className="bn-logros">
               {LOGROS.map((lg) => { const on = unlocked(data.log, pid).includes(lg); return (
                 <div className={`bn-logro ${on ? 'on' : ''}`} key={lg.id}>
