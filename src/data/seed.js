@@ -87,6 +87,7 @@ export const seed = () => ({
   ],
   // Rankings: cada anotación es { id, m: idIntegrante, k: estadística, d: fecha, n }. Arranca vacío: no hay datos inventados.
   log: [],
+  partidas: [], // resultados de ¿Quién es quién?: { id, game, d, scores: [{ name, pts }] }
   flama: {}, // anécdota del año: { '2026': 'texto' }
   stories: [
     { id: 'a1', title: 'Nace el grupo', date: '2021-12-26',
