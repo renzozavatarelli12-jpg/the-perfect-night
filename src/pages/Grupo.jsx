@@ -4,6 +4,7 @@ import { useStore } from '../store'
 import LocalNote from '../components/LocalNote'
 import { useConfirm } from '../components/Confirm'
 import ListSection from '../components/ListSection'
+import { GroupHead, Admin } from '../components/Admin'
 import { downloadBackup, parseBackup } from '../utils'
 
 function Backup() {
@@ -50,7 +51,7 @@ function Backup() {
 const AV = ['var(--lav)', 'var(--flare)', 'var(--gold)', '#9FD8C4', '#E7A6D6', '#A9C4F5'] // un color por integrante
 
 export default function Grupo() {
-  const { data, update, reset, online } = useStore()
+  const { data, update, reset, online, canAct = () => true } = useStore()
   const ask = useConfirm()
   const set = (k) => (v) => update(k, v)
   const fixed = data.members.filter((m) => !m.guest)
@@ -60,8 +61,9 @@ export default function Grupo() {
     <>
       <h1>El grupo</h1>
       <p className="lead">Los de siempre, sus apodos y las historias que no se cuentan afuera.</p>
+      {online && <GroupHead />}
 
-      <ListSection title="Los de siempre" addLabel="Sumar integrante" items={fixed} onChange={(v) => update('members', (ms) => [...v, ...ms.filter((m) => m.guest)])}
+      <ListSection title="Los de siempre" addLabel="Sumar integrante" items={fixed} editable={(m) => canAct(m.id)} onChange={(v) => update('members', (ms) => [...v, ...ms.filter((m) => m.guest)])}
         fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'nick', label: 'Apodo' }, { name: 'photo', label: 'Foto de perfil', type: 'photo' }, { name: 'drink', label: 'Qué tomás', type: 'select', options: drinkOpts }]}
         render={(m) => (
           <div className="row" style={{ flexWrap: 'nowrap' }}>
@@ -74,6 +76,8 @@ export default function Grupo() {
       <ListSection title="Anécdotas" addLabel="Nueva anécdota" items={data.stories} onChange={set('stories')}
         fields={[{ name: 'title', label: 'Título', required: true }, { name: 'date', label: 'Cuándo', type: 'date' }, { name: 'text', label: 'La historia', type: 'textarea' }]}
         render={(a) => <><b style={{ fontSize: 17 }}>{a.title}</b> {a.date && <span className="muted small" style={{ display: 'block' }}>{new Date(a.date + 'T12:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' })}</span>}<p className="muted" style={{ marginTop: 4, maxWidth: '60ch' }}>{a.text}</p></>} />
+
+      {online && <Admin />}
 
       <Backup />
 

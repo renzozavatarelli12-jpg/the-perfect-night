@@ -7,7 +7,7 @@ import { KINDS, RANKS, LOGROS, total, inYear, bump, unlocked, season } from '../
 const list = (a) => (a.length ? a.join(' y ') : 'Vacante')
 
 export default function Rankings() {
-  const { data, update, me } = useStore()
+  const { data, update, me, canAct = () => true } = useStore()
   const members = data.members.filter((m) => !m.guest)
   const [pid, setPid] = useState(me && members.some((m) => m.id === me) ? me : members[0]?.id)
   const nowY = today().slice(0, 4)
@@ -65,7 +65,7 @@ export default function Rankings() {
               <span className="muted small">Qué tomás</span>
               <div className="row" style={{ marginTop: 6, flexWrap: 'wrap' }}>
                 {data.favDrinks.map((d) => (
-                  <button key={d.id} className={`pill ${p?.drink === d.id ? 'on' : ''}`} onClick={() => setDrink(p?.drink === d.id ? '' : d.id)}>{d.name}</button>
+                  <button key={d.id} disabled={!canAct(pid)} className={`pill ${p?.drink === d.id ? 'on' : ''}`} onClick={() => setDrink(p?.drink === d.id ? '' : d.id)}>{d.name}</button>
                 ))}
               </div>
               <form className="add" onSubmit={addDrink}>
