@@ -4,8 +4,8 @@ const URL_ = import.meta.env?.VITE_SUPABASE_URL || 'https://xcligofglpsrtruziqea
 const KEY = import.meta.env?.VITE_SUPABASE_ANON_KEY || 'sb_publishable_-MXl3P_DU9WYK76gOr2nvQ_gVHO1Ao5'
 const T = 'tpn-v2-token'
 
-// shortcut: la versión compartida se prende por celu con ?nube=1 o con el link de invitación (#g=código); prenderla para todos = ON en true.
-const ON = false
+// Versión compartida prendida para todos (con ON = false, solo se prendía por celu con ?nube=1 o el link de invitación #g=código).
+const ON = true
 const ls = (() => { try { return localStorage } catch { return null } })()
 const q = new URLSearchParams(location.search)
 if (q.has('nube')) ls?.setItem('tpn-cloud', q.get('nube'))
