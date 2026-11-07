@@ -2,6 +2,7 @@ import { NavLink, Outlet, Link, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import { Flame, Users, Gamepad2, Trophy } from 'lucide-react'
 import { useStore } from '../store'
+import { Join, SyncDot, SyncBar, Migrate } from './Cloud'
 
 const tabs = [
   ['/', 'Hoy', Flame],
@@ -11,13 +12,14 @@ const tabs = [
 ]
 
 export default function Layout() {
-  const { data, me, setMe } = useStore()
+  const { data, me, setMe, online, sync } = useStore()
   const { pathname } = useLocation()
   useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  if (online && sync.needJoin) return <Join />
   return (
     <>
       <header className="top">
-        <Link to="/" className="logo">the perfect night<i>.</i></Link>
+        <Link to="/" className="logo">the perfect night<i>.</i>{online && <SyncDot />}</Link>
         <nav className="tabs">
           {tabs.map(([to, label, Icon]) => (
             <NavLink key={to} to={to} end={to === '/'}>
@@ -35,6 +37,8 @@ export default function Layout() {
           )}
         </select>
       </header>
+      {online && <SyncBar />}
+      {online && <Migrate />}
       <main className="wrap"><Outlet /></main>
     </>
   )
