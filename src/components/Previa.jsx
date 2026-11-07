@@ -22,7 +22,7 @@ export default function Previa({ night, patch, title = 'Previa: ¿dónde?' }) {
               <span className="grow"><b>{p.place}</b></span>
               <span className="vote-n" aria-label={`${p.votes.length} ${p.votes.length === 1 ? 'voto' : 'votos'}`}>{p.votes.length}</span>
             </button>
-            <button className="ib" aria-label={`Quitar ${p.place}`} onClick={() => patch((n) => ({ ...n, previas: n.previas.filter((x) => x.id !== p.id) }))}><Trash2 size={16} /></button>
+            {!/^p[12]$/.test(p.id) && <button className="ib" aria-label={`Quitar ${p.place}`} onClick={() => patch((n) => ({ ...n, previas: n.previas.filter((x) => x.id !== p.id) }))}><Trash2 size={16} /></button>}
           </div>
         )
       })}
