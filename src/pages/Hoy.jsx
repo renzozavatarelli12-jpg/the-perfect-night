@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Trash2, MapPin, Ticket, MessageCircle, RotateCcw } from 'lucide-react'
 import { useStore } from '../store'
 import Previa from '../components/Previa'
+import Plans from '../components/Plans'
 import ShareSheet from '../components/ShareSheet'
 import LocalNote from '../components/LocalNote'
 import { useConfirm } from '../components/Confirm'
@@ -81,6 +82,8 @@ export default function Hoy() {
         </div>
       </section>
       {!me && <p className="hint">Elegí quién sos arriba a la derecha y votá.</p>}
+
+      <Plans />
 
       <Previa night={hoy} patch={patch} title="¿Dónde es la previa?" />
 
