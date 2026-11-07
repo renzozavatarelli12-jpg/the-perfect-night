@@ -89,7 +89,7 @@ export default function Hoy() {
                 <span className="vote-n" aria-label={`${count(b)} ${count(b) === 1 ? 'voto' : 'votos'}`}>{count(b)}</span>
               </button>
               <a className="ib" href={mapLink(b)} target="_blank" rel="noreferrer" aria-label={`Cómo llegar a ${b.name}`}><MapPin size={18} /></a>
-              <button className="ib" aria-label={`Sacar ${b.name}`} onClick={() => removeBoliche(b)}><Trash2 size={16} /></button>
+              {!/^b[1-5]$/.test(b.id) && <button className="ib" aria-label={`Sacar ${b.name}`} onClick={() => removeBoliche(b)}><Trash2 size={16} /></button>}
             </div>
           )
         })}
