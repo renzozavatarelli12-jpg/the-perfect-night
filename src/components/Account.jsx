@@ -74,13 +74,14 @@ function LinkScreen() {
   )
 }
 
-function Welcome() {
+// Link de invitación/de admin y código de otro celu (sirve para volver a entrar si este celu se olvidó de quién sos).
+function HaveLink() {
   const a = useAccount()
   const [code, setCode] = useState('')
   const [dev, setDev] = useState('')
   const [err, setErr] = useState(null)
   return (
-    <Screen title="¿Sos de un grupo?" lead="Para entrar necesitás el link de invitación que te pasa alguien del grupo.">
+    <>
       <form className="add" onSubmit={(e) => { e.preventDefault(); code.trim() && a.openLink(code) }}>
         <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="Pegá el link o el código" aria-label="Link o código de invitación" autoCapitalize="none" autoCorrect="off" spellCheck="false" />
         <button className="btn">Seguir</button>
@@ -91,6 +92,14 @@ function Welcome() {
         <button className="btn ghost">Entrar</button>
       </form>
       <Err e={err} />
+    </>
+  )
+}
+
+function Welcome() {
+  return (
+    <Screen title="¿Sos de un grupo?" lead="Para entrar necesitás el link de invitación que te pasa alguien del grupo.">
+      <HaveLink />
     </Screen>
   )
 }
@@ -103,7 +112,8 @@ function Claim({ onLater }) {
     <Screen title="¿Quién sos?" lead={`Ahora cada uno tiene su lugar en ${l.group}. Elegí tu nombre: un admin confirma que sos vos.`}>
       <Pick profiles={l.profiles} label="Listo" onGo={a.claim} />
       <button className="btn ghost" style={{ marginTop: 12 }} onClick={onLater}>Después</button>
-      <p className="note" style={{ marginTop: 14 }}>¿No aparece tu nombre? Ya lo eligió alguien o tenés una invitación personal: pedísela al admin.</p>
+      <p className="note" style={{ marginTop: 14 }}>¿No aparece tu nombre? Ya lo eligió alguien: usá tu link personal o el código de otro celu.</p>
+      <HaveLink />
     </Screen>
   )
 }
