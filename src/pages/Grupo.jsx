@@ -62,10 +62,10 @@ export default function Grupo() {
       <p className="lead">Los de siempre, sus apodos y las historias que no se cuentan afuera.</p>
 
       <ListSection title="Los de siempre" addLabel="Sumar integrante" items={fixed} onChange={(v) => update('members', (ms) => [...v, ...ms.filter((m) => m.guest)])}
-        fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'nick', label: 'Apodo' }, { name: 'drink', label: 'Qué tomás', type: 'select', options: drinkOpts }]}
+        fields={[{ name: 'name', label: 'Nombre', required: true }, { name: 'nick', label: 'Apodo' }, { name: 'photo', label: 'Foto de perfil', type: 'photo' }, { name: 'drink', label: 'Qué tomás', type: 'select', options: drinkOpts }]}
         render={(m) => (
           <div className="row" style={{ flexWrap: 'nowrap' }}>
-            <span className="avatar" aria-hidden="true" style={{ '--av': AV[fixed.indexOf(m) % AV.length] }}>{m.name[0]}</span>
+            {m.photo ? <img className="avatar" src={m.photo} alt="" /> : <span className="avatar" aria-hidden="true" style={{ '--av': AV[fixed.indexOf(m) % AV.length] }}>{m.name[0]}</span>}
             <span className="grow"><b style={{ fontSize: 17 }}>{m.name}</b>{m.nick && <span className="muted small" style={{ display: 'block' }}>{m.nick}</span>}</span>
             {drinkName(m.drink) && <span className="tag">{drinkName(m.drink)}</span>}
           </div>
