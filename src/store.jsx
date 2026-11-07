@@ -58,7 +58,7 @@ export function GroupStore({ group, onLost, children }) {
     addEventListener('online', tick); document.addEventListener('visibilitychange', tick)
     return () => { clearInterval(t); removeEventListener('online', tick); document.removeEventListener('visibilitychange', tick) }
   }, [st.needJoin, eng, onLost])
-  useEffect(() => (st.topic && !st.needJoin ? listen(st.topic, () => eng.pull()) : undefined), [st.topic, st.needJoin, eng])
+  useEffect(() => (st.topic && !st.needJoin ? listen(st.topic, () => { eng.pull(); dispatchEvent(new Event('tpn-changed')) }) : undefined), [st.topic, st.needJoin, eng])
   // grupo recién creado: se cargan los boliches y preguntas de arranque, una sola vez
   useEffect(() => {
     const k = 'tpn-seed-' + group.id
