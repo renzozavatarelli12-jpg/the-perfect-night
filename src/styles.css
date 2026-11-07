@@ -176,3 +176,29 @@ label { display: grid; gap: 6px; } label span { font-size: 13px; color: var(--mu
 .admin label select { display: block; }
 .admin .made { margin-top: 12px; padding: 12px; border-radius: 14px; background: var(--coal); display: grid; gap: 10px; }
 .ghead .row { flex-wrap: nowrap; }
+
+/* planes (Fase 2) */
+.plan { margin-top: 12px; border: 1px solid var(--graphite); border-radius: var(--r); background: var(--coal); overflow: hidden; }
+.plan-h { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 14px; min-height: 56px; }
+.plan-h .grow b { display: block; font-size: 17px; }
+.plan-b { padding: 4px 14px 16px; border-top: 1px solid var(--graphite); display: grid; gap: 8px; }
+.plan-b h3 { margin-top: 14px; font-size: 15px; color: var(--lav); }
+.plan-info { display: grid; gap: 4px; margin-top: 10px; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.pill.on { background: var(--lav); color: var(--black); border-color: var(--lav); }
+.tag.ok { background: rgba(120, 200, 140, .18); color: #9fe0b0; }
+.st-conf { background: rgba(120, 200, 140, .18); color: #9fe0b0; } .st-canc { background: rgba(255, 122, 92, .15); color: #ffc2b3; } .st-done { color: var(--muted); }
+.car, .item, .cm { padding: 12px; border-radius: 14px; background: var(--black); display: grid; gap: 6px; position: relative; }
+.car.off { opacity: .6; }
+.car .row, .item { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.item select { width: auto; min-height: 40px; padding: 4px 10px; }
+.item.st-comp .grow { text-decoration: line-through; color: var(--muted); }
+.chip { display: inline-flex; align-items: center; gap: 4px; margin: 2px 4px 2px 0; padding: 2px 4px 2px 10px; border-radius: 999px; background: var(--graphite); }
+.chip button { min-width: 40px; min-height: 40px; margin: -8px -4px -8px 0; display: grid; place-items: center; color: var(--muted); }
+.cm p { white-space: pre-wrap; overflow-wrap: anywhere; } .cm .ib { position: absolute; top: 2px; right: 2px; }
+
+/* iPhone chicos (320px): que header y barra de abajo no ensanchen la página */
+@media (max-width: 360px) {
+  .top { padding-left: 12px; padding-right: 12px; } .logo { font-size: 20px; } .me { max-width: 112px; min-width: 0; }
+  .tabs { left: 8px; right: 8px; } .tabs a { min-width: 0; font-size: 10px; }
+}
