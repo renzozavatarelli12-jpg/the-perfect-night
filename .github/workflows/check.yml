@@ -1,0 +1,14 @@
+name: Build check (rama de prueba, no publica)
+on:
+  push: { branches: [renzozavatarelli12-jpg-patch-1] }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm install --no-audit --no-fund
+      - run: npm run build
+        env: { GITHUB_PAGES: '1' }
+      - run: ls -la dist dist/assets
