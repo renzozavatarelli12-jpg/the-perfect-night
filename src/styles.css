@@ -148,3 +148,16 @@ label { display: grid; gap: 6px; } label span { font-size: 13px; color: var(--mu
 @keyframes fade { from { opacity: 0; } }
 @keyframes float { 50% { transform: translateY(-6px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* nube: estado de sincronización */
+.logo:has(.sync-dot) { position: relative; }
+.sync-dot { position: absolute; right: -11px; bottom: 2px; width: 8px; height: 8px; border-radius: 50%; background: #6fd39b; } /* encima del hueco: no corre el header */
+.sync-dot.wait { background: var(--flare); animation: blink 1s ease-in-out infinite; }
+.sync-dot.off { background: #5a5266; }
+@keyframes blink { 50% { opacity: .3; } }
+.sync-bar { position: sticky; top: calc(68px + env(safe-area-inset-top)); z-index: 19; display: flex; align-items: center; gap: 8px; padding: 8px 18px; font-size: 13px; background: var(--graphite); color: var(--paper); }
+.sync-bar.note { background: rgba(255, 122, 92, .18); color: #ffc2b3; }
+.sync-bar .ib { min-width: 36px; min-height: 36px; }
+.join { padding-top: calc(48px + env(safe-area-inset-top)); }
+.join .logo { margin-bottom: 40px; }
+@media (min-width: 800px) { .sync-bar { top: 80px; padding: 8px 32px; } }

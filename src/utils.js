@@ -11,9 +11,15 @@ export const mapLink = (b) =>
   b.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${b.address || b.zone || ''}`)}`
 
 // --- copia de seguridad ---
-const OPTIONAL = ['probable', 'quien', 'log']
+const OPTIONAL = ['probable', 'quien', 'log', 'partidas']
 const isObj = (x) => !!x && typeof x === 'object' && !Array.isArray(x)
 export const makeBackup = (data, me) => ({ app: 'the-perfect-night', version: 1, exportedAt: new Date().toISOString(), data, me })
+export function downloadBackup(data, me) {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(makeBackup(data, me), null, 2)], { type: 'application/json' }))
+  const a = Object.assign(document.createElement('a'), { href: url, download: `the-perfect-night-${today()}.json` })
+  document.body.append(a); a.click(); a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
 
 // Valida una copia SIN tocar nada. Devuelve { data, me } o { error }.
 export function parseBackup(text) {
@@ -31,14 +37,14 @@ export function parseBackup(text) {
   // hoy es opcional (copias viejas no lo traen)
   const h = d.hoy
   if (h !== undefined && !(isObj(h) && isObj(h.votes) && Array.isArray(h.previas) && h.previas.every((p) => isObj(p) && Array.isArray(p.votes)))) return { error: 'La votación de hoy está dañada.' }
-  return { data: { hoy: ref.hoy, probable: ref.probable, quien: ref.quien, log: [], flama: {}, ...d }, me: d.members.some((m) => m.id === b.me) ? b.me : null }
+  return { data: { hoy: ref.hoy, probable: ref.probable, quien: ref.quien, log: [], partidas: [], flama: {}, ...d }, me: d.members.some((m) => m.id === b.me) ? b.me : null }
 }
 
 // --- mensaje de WhatsApp ---
-export function hoyMessage(hoy, data, url) {
+export function hoyMessage(hoy, data, url, online) {
   const p = winners(hoy.previas, (x) => x.votes.length).map((x) => x.place)
   const b = winners(data.boliches, (x) => Object.values(hoy.votes).filter((v) => v === x.id).length).map((x) => x.name)
   const f = (a) => (a.length ? a.join(' / ') + (a.length > 1 ? ' (empate)' : '') : 'a votar')
   return ['🌙 the perfect night.', `🍻 Previa: ${f(p)}`, `🪩 Boliche: ${f(b)}`, '', `Votá en la app: ${url}`,
-    '(Por ahora cada uno ve los votos en su propio celu: este mensaje no los sincroniza.)'].join('\n')
+    ...(online ? [] : ['(Por ahora cada uno ve los votos en su propio celu: este mensaje no los sincroniza.)'])].join('\n')
 }
