@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trash2, MapPin, MessageCircle, RotateCcw } from 'lucide-react'
+import { Trash2, MapPin, Ticket, MessageCircle, RotateCcw } from 'lucide-react'
 import { useStore } from '../store'
 import Previa from '../components/Previa'
 import ShareSheet from '../components/ShareSheet'
@@ -9,6 +9,14 @@ import { uid, newGuest, mapLink, winners, hoyMessage } from '../utils'
 
 // Logos de los boliches de siempre (public/boliches). Si el boliche tiene su propia foto, gana esa.
 const LOGO = { b1: 'cruza-polo', b2: 'cruza-recoleta', b3: 'la-tincho-fierro', b4: 'tamarisco' }
+// Dónde sacar entrada (se ve en el boliche de siempre; los que suma alguien no tienen).
+const ENTRADAS = {
+  b1: 'https://planout.ar/cruzapolo/HomePlanout',
+  b2: 'https://planout.ar/cruzarecoleta/es/HomePlanout',
+  b3: 'https://events.flashpass.com.ar/productores/la-tincho-fierro',
+  b4: 'https://tr.ee/CI0k0sxObg',
+  b5: 'https://events.flashpass.com.ar/productores/argento-3629',
+}
 const photo = (b) => b.photo || (LOGO[b.id] ? `${import.meta.env.BASE_URL}boliches/${LOGO[b.id]}.jpg` : '')
 
 export default function Hoy() {
@@ -88,6 +96,7 @@ export default function Hoy() {
                 <span className="grow"><b>{b.name}</b></span>
                 <span className="vote-n" aria-label={`${count(b)} ${count(b) === 1 ? 'voto' : 'votos'}`}>{count(b)}</span>
               </button>
+              {ENTRADAS[b.id] && <a className="ib" href={ENTRADAS[b.id]} target="_blank" rel="noreferrer" aria-label={`Sacar entrada para ${b.name}`}><Ticket size={18} /></a>}
               <a className="ib" href={mapLink(b)} target="_blank" rel="noreferrer" aria-label={`Cómo llegar a ${b.name}`}><MapPin size={18} /></a>
               {!/^b[1-5]$/.test(b.id) && <button className="ib" aria-label={`Sacar ${b.name}`} onClick={() => removeBoliche(b)}><Trash2 size={16} /></button>}
             </div>
