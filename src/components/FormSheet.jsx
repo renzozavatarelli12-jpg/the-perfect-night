@@ -21,7 +21,13 @@ export default function FormSheet({ title, fields, initial = {}, onSave, onClose
     if (!f) return
     try { const src = await chica(f); setV((x) => ({ ...x, [name]: src })); setPerr('') } catch { setPerr('No pude leer esa foto. Probá con otra.') }
   }
-  const submit = (e) => { e.preventDefault(); onSave(v); onClose() }
+  const [bz, setBz] = useState(false), [serr, setSerr] = useState('')
+  // Si el guardado devuelve false (sin conexión, error del servidor) la hoja queda abierta con lo escrito.
+  const submit = async (e) => {
+    e.preventDefault(); if (bz) return
+    setBz(true); const r = await onSave(v); setBz(false); setSerr('')
+    if (r === false) setSerr('No se pudo guardar. Revisá la conexión y probá de nuevo.'); else onClose()
+  }
   return (
     <div className="overlay" onClick={onClose}>
       <form className="sheet" onClick={(e) => e.stopPropagation()} onSubmit={submit}>
@@ -50,9 +56,10 @@ export default function FormSheet({ title, fields, initial = {}, onSave, onClose
             )}
           </label>
         ))}
+        {serr && <p className="small err" role="alert">{serr}</p>}
         <div className="row end">
           <button type="button" className="btn ghost" onClick={onClose}>Cancelar</button>
-          <button className="btn">Guardar</button>
+          <button className="btn" disabled={bz}>Guardar</button>
         </div>
       </form>
     </div>
