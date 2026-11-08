@@ -8,7 +8,7 @@ import { GroupChip } from './Account'
 const tabs = [
   ['/', 'Hoy', Flame],
   ['/grupo', 'Grupo', Users],
-  ['/minijuegos', 'Minijuegos', Gamepad2],
+  ['/minijuegos', 'Juegos', Gamepad2],
   ['/rankings', 'Rankings', Trophy],
 ]
 

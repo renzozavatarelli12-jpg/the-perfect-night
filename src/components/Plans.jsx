@@ -2,7 +2,10 @@ import { useState } from 'react'
 import { Plus, Pencil, Trash2, X, MapPin } from 'lucide-react'
 import { useStore } from '../store'
 import { usePlans, STATUS, ITEM, ANS, dayLabel, split } from '../plans'
-import { who, mapLink } from '../utils'
+import { who, mapLink, today } from '../utils'
+import { call } from '../cloud'
+import { liveErr } from '../live'
+import BolicheSheet from './Boliche'
 import FormSheet from './FormSheet'
 import { useConfirm } from './Confirm'
 
@@ -79,7 +82,15 @@ function Card({ p, P, data, open, toggle, bolOpts }) {
 function Detail({ p, P, data, bol, bolOpts }) {
   const ask = useConfirm()
   const [edit, setEdit] = useState(false)
+  const [ficha, setFicha] = useState(false)
+  const [fui, setFui] = useState(null) // { ok, text }
   const mine = P.me
+  // "Fui": recién acá suma una salida (y la visita al boliche del plan) para los rankings. Confirmar "Voy" no cuenta.
+  const canFui = (p.status === 'conf' || p.status === 'done') && !!p.day && p.day <= today()
+  const markFui = async () => {
+    try { const r = await call('tpn_night', { p_group: P.gid, p_day: null, p_boliche: null, p_plan: p.id }); setFui({ ok: true, text: r.added > 1 ? 'Anotado: salida y boliche para los rankings.' : 'Anotado para los rankings.' }) }
+    catch (e) { setFui({ ok: false, text: liveErr(e) }) }
+  }
   const name = (id) => who(data.members, id)
   const top = [...data.boliches].map((b) => [b, Object.values(data.hoy.votes).filter((v) => v === b.id).length]).sort((a, b) => b[1] - a[1])[0]
   const del = async () => { if (await ask(`¿Borrar el plan "${p.title}" con todo lo que tiene cargado?`, 'Sí, borrar')) P.delPlan(p.id) }
@@ -93,7 +104,7 @@ function Detail({ p, P, data, bol, bolOpts }) {
       <div className="plan-info">
         {p.place && <div><span className="muted small">Previa</span> {p.place}</div>}
         {p.boliche && !bol && <div><span className="muted small">Boliche</span> <span className="tag">Ya no está en la lista</span></div>}
-        {bol && <div><span className="muted small">Boliche</span> <b>{bol.name}</b> <a className="map" href={mapLink(bol)} target="_blank" rel="noreferrer"><MapPin size={13} aria-hidden="true" /> Cómo llegar</a></div>}
+        {bol && <div><span className="muted small">Boliche</span> <button className="linkish" onClick={() => setFicha(true)}><b>{bol.name}</b></button> <a className="map" href={mapLink(bol)} target="_blank" rel="noreferrer"><MapPin size={13} aria-hidden="true" /> Cómo llegar</a></div>}
         {p.final_time && <div><span className="muted small">Horario final</span> {p.final_time}</div>}
         {!bol && top && top[1] > 0 && <button className="pill" disabled={P.busy} onClick={() => P.savePlan(p.id, { boliche: top[0].id })}>Usar el más votado: {top[0].name}</button>}
         <div className="row" style={{ marginTop: 8 }}>
@@ -112,10 +123,18 @@ function Detail({ p, P, data, bol, bolOpts }) {
       </div>
       {Object.entries(ANS).map(([k, l]) => { const ms = p.rsvps.filter((r) => r.a === k); return ms.length ? <p key={k} className="small"><b>{l} ({ms.length}):</b> <span className="muted">{ms.map((r) => name(r.m)).join(', ')}</span></p> : null })}
 
+      {canFui && <>
+        <h3>¿Fuiste?</h3>
+        <p className="small muted">Para los rankings: suma tu salida{bol ? ` y la visita a ${bol.name}` : ''}. Solo cuenta si tocás acá.</p>
+        <div className="row" style={{ marginTop: 6 }}><button className="pill" disabled={!!fui?.ok} onClick={markFui}>{fui?.ok ? '✓ Fui' : 'Fui'}</button>
+          {fui && <span role="status" className={'small ' + (fui.ok ? 'muted' : 'err')}>{fui.text}</span>}</div>
+      </>}
+
       <Cars p={p} P={P} name={name} mine={mine} ask={ask} />
       <Items p={p} P={P} data={data} name={name} mine={mine} />
       <Comments p={p} P={P} name={name} mine={mine} />
 
+      {ficha && bol && <BolicheSheet id={bol.id} onClose={() => setFicha(false)} />}
       {edit && <PlanForm title="Datos del plan" bolOpts={bolOpts} initial={{ title: p.title, day: p.day || '', time: p.time, zone: p.zone, place: p.place, final_time: p.final_time, boliche: bol ? p.boliche : '' }}
         onClose={() => setEdit(false)} onSave={(v) => P.savePlan(p.id, clean(v))} />}
     </div>

@@ -12,7 +12,7 @@ export function ConfirmProvider({ children }) {
     <Ctx.Provider value={ask}>
       {children}
       {q && (
-        <div className="overlay" onClick={() => close(false)}>
+        <div className="overlay over" onClick={() => close(false)}>
           <div className="sheet" role="alertdialog" aria-label={q.text} onClick={(e) => e.stopPropagation()}>
             <p>{q.text}</p>
             <div className="row end">
