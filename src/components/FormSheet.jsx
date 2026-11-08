@@ -40,7 +40,7 @@ export default function FormSheet({ title, fields, initial = {}, onSave, onClose
           <label key={f.name}>
             <span>{f.label}</span>
             {f.type === 'textarea' ? (
-              <textarea rows={4} value={v[f.name] || ''} onChange={set(f.name)} required={f.required} />
+              <textarea rows={4} value={v[f.name] || ''} onChange={set(f.name)} required={f.required} maxLength={f.max} />
             ) : f.type === 'select' ? (
               <select value={v[f.name] || ''} onChange={set(f.name)}>
                 {f.options.map(([val, lab]) => <option key={val} value={val}>{lab}</option>)}
