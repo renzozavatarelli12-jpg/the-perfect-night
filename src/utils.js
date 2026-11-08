@@ -8,7 +8,7 @@ export const newGuest = (name) => ({ id: 'g_' + uid(), name, nick: '', drink: ''
 // Los que van ganando (todos si hay empate); [] si nadie votó.
 export const winners = (items, count) => { const max = Math.max(0, ...items.map(count)); return max ? items.filter((i) => count(i) === max) : [] }
 export const mapLink = (b) =>
-  b.mapUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${b.address || b.zone || ''}`)}`
+  (/^https?:\/\//i.test(b.mapUrl || '') && b.mapUrl) || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${b.name} ${b.address || b.zone || ''}`)}`
 
 // --- copia de seguridad ---
 const OPTIONAL = ['probable', 'quien', 'log', 'partidas']
