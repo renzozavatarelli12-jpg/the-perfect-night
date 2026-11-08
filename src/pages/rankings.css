@@ -4,17 +4,29 @@
 .bn-hero h1 { color: var(--gold); }
 .bn-hero p { color: var(--muted); margin-top: 10px; }
 .bn-hero .bn-e { position: absolute; right: 0; top: 0; font-size: 46px; animation: float 4s ease-in-out infinite; }
-/* los cuatro grandes: una lista de honor, no tarjetas iguales */
-.bn-grid { display: grid; margin-top: 6px; }
-.bn-card {
-  display: grid; grid-template-columns: 44px 1fr auto; grid-template-rows: auto auto; column-gap: 12px; align-items: center;
-  padding: 16px 2px; border-bottom: 1px solid var(--coal);
-}
-.bn-card .e { grid-row: 1 / 3; font-size: 30px; text-align: center; }
-.bn-card b { font-size: 13px; font-weight: 600; color: var(--muted); }
-.bn-card .w { grid-column: 2; font-family: var(--display); font-weight: 900; font-size: 34px; line-height: .95; color: var(--paper); overflow-wrap: anywhere; }
-.bn-card .small { grid-column: 3; grid-row: 1 / 3; color: var(--gold); font-family: var(--display); font-weight: 900; font-size: 40px; line-height: 1; }
-.bn-card .w.tbd { color: #5a5266; }
+/* los cuatro grandes: cada uno con su color y su podio */
+.rk { margin-top: 14px; padding: 16px 16px 8px; border-radius: 22px; background: var(--coal); border: 1px solid var(--line); animation: up .3s var(--ease) both; }
+.rk-cubatas { --rk: #FF9E7A; } .rk-besos { --rk: #F59AC9; } .rk-salidas { --rk: var(--lav); } .rk-boliches { --rk: var(--gold); }
+.rk-h { display: flex; gap: 12px; align-items: center; }
+.rk-h .e { font-size: 34px; line-height: 1; }
+.rk-h b { display: block; font-family: var(--display); font-weight: 900; font-size: 28px; line-height: 1; color: var(--rk); text-transform: uppercase; letter-spacing: .5px; }
+.rk-list { list-style: none; margin-top: 8px; }
+.rk-list li { display: flex; align-items: center; gap: 12px; padding: 10px 2px; border-top: 1px solid var(--graphite); }
+.rk-pos { width: 28px; text-align: center; font-family: var(--display); font-weight: 800; font-size: 20px; color: var(--muted); }
+.rk-list li.lead .rk-pos { color: var(--rk); }
+.rk-list li.lead .grow { font-weight: 700; font-size: 18px; }
+.rk-list li.me .grow::after { content: ' (vos)'; color: var(--muted); font-size: 13px; font-weight: 400; }
+.rk-n { font-family: var(--display); font-weight: 900; font-size: 28px; line-height: 1; min-width: 36px; text-align: right; }
+.rk-list li.lead .rk-n { color: var(--rk); }
+.rk .empty { padding: 10px 2px 8px; }
+.bn-lock { margin-top: 14px; padding: 10px 14px; border-radius: 14px; background: rgba(242, 193, 78, .1); color: var(--gold); }
+.bn-form { display: grid; gap: 10px; margin-top: 12px; }
+.bn-form label { display: grid; gap: 4px; }
+.bn-row .btn.sm { margin-left: 4px; }
+.bn-why { margin-top: 6px; min-height: 40px; padding: 6px 10px; font-size: 14px; }
+.bn-sum .small { display: block; margin-top: 2px; }
+.bn-story { white-space: pre-wrap; font-size: 20px !important; }
+@media (max-width: 360px) { .bn-row { flex-wrap: wrap; } }
 /* perfil: contador grande con + y − al alcance del pulgar */
 .bn-row { display: flex; align-items: center; gap: 12px; padding: 10px 6px 10px 14px; border-radius: var(--r); background: var(--coal); margin-top: 8px; min-height: 64px; }
 .bn-row .grow { font-weight: 600; }
@@ -23,13 +35,6 @@
 .bn-step:active { transform: scale(.9); }
 .bn-step.minus { background: transparent; border: 1.5px solid #5a5266; color: var(--paper); }
 .bn-step:disabled { opacity: .3; }
-/* logros: medallas apagadas hasta que se ganan */
-.bn-logros { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 14px; }
-.bn-logro { display: grid; gap: 6px; padding: 16px; border-radius: 22px; border: 1px dashed var(--graphite); color: var(--muted); }
-.bn-logro .e { font-size: 30px; filter: grayscale(1); opacity: .5; }
-.bn-logro.on { border: 1px solid var(--gold); color: var(--paper); background: rgba(242, 193, 78, .08); animation: medal .6s var(--ease) both; }
-.bn-logro.on .e { filter: none; opacity: 1; }
-@keyframes medal { 0% { transform: scale(.85) rotate(-4deg); opacity: 0; } 60% { transform: scale(1.04) rotate(1deg); } }
 /* FLAMA: tabla de honor del año */
 .bn-sum { display: grid; margin-top: 12px; }
 .bn-sum > div { padding: 12px 2px; border-bottom: 1px solid var(--coal); color: var(--muted); }

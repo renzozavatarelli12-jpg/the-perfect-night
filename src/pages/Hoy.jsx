@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Trash2, MapPin, Ticket, MessageCircle, RotateCcw } from 'lucide-react'
+import { Trash2, MapPin, Ticket, MessageCircle, RotateCcw, Info } from 'lucide-react'
 import { useStore } from '../store'
 import Previa from '../components/Previa'
 import Plans from '../components/Plans'
@@ -7,18 +7,8 @@ import ShareSheet from '../components/ShareSheet'
 import LocalNote from '../components/LocalNote'
 import { useConfirm } from '../components/Confirm'
 import { uid, newGuest, mapLink, winners, hoyMessage } from '../utils'
-
-// Logos de los boliches de siempre (public/boliches). Si el boliche tiene su propia foto, gana esa.
-const LOGO = { b1: 'cruza-polo', b2: 'cruza-recoleta', b3: 'la-tincho-fierro', b4: 'tamarisco' }
-// Dónde sacar entrada (se ve en el boliche de siempre; los que suma alguien no tienen).
-const ENTRADAS = {
-  b1: 'https://planout.ar/cruzapolo/HomePlanout',
-  b2: 'https://planout.ar/cruzarecoleta/es/HomePlanout',
-  b3: 'https://events.flashpass.com.ar/productores/la-tincho-fierro',
-  b4: 'https://tr.ee/CI0k0sxObg',
-  b5: 'https://events.flashpass.com.ar/productores/argento-3629',
-}
-const photo = (b) => b.photo || (LOGO[b.id] ? `${import.meta.env.BASE_URL}boliches/${LOGO[b.id]}.jpg` : '')
+import { photo, tickets } from '../boliches'
+import BolicheSheet from '../components/Boliche'
 
 export default function Hoy() {
   const { data, update, me, setMe, online } = useStore()
@@ -27,6 +17,7 @@ export default function Hoy() {
   const [guestName, setGuestName] = useState('')
   const [guestErr, setGuestErr] = useState('')
   const [bName, setBName] = useState('')
+  const [ficha, setFicha] = useState(null)
   const hoy = data.hoy
   const patch = (fn) => update('hoy', fn)
   const count = (b) => Object.values(hoy.votes).filter((v) => v === b.id).length
@@ -89,6 +80,7 @@ export default function Hoy() {
 
       <section className="sec">
         <h2>¿A qué boliche?</h2>
+        <p className="muted small">Tocá <Info size={13} aria-hidden="true" /> para ver la ficha: fotos, entradas y lo que dice el grupo.</p>
         {data.boliches.map((b) => {
           const on = hoy.votes[me] === b.id
           return (
@@ -99,7 +91,8 @@ export default function Hoy() {
                 <span className="grow"><b>{b.name}</b></span>
                 <span className="vote-n" aria-label={`${count(b)} ${count(b) === 1 ? 'voto' : 'votos'}`}>{count(b)}</span>
               </button>
-              {ENTRADAS[b.id] && <a className="ib" href={ENTRADAS[b.id]} target="_blank" rel="noreferrer" aria-label={`Sacar entrada para ${b.name}`}><Ticket size={18} /></a>}
+              <button className="ib" aria-label={`Ficha de ${b.name}`} onClick={() => setFicha(b.id)}><Info size={18} /></button>
+              {tickets(b) && <a className="ib" href={tickets(b)} target="_blank" rel="noreferrer" aria-label={`Sacar entrada para ${b.name}`}><Ticket size={18} /></a>}
               <a className="ib" href={mapLink(b)} target="_blank" rel="noreferrer" aria-label={`Cómo llegar a ${b.name}`}><MapPin size={18} /></a>
               {!/^b[1-5]$/.test(b.id) && <button className="ib" aria-label={`Sacar ${b.name}`} onClick={() => removeBoliche(b)}><Trash2 size={16} /></button>}
             </div>
@@ -133,6 +126,7 @@ export default function Hoy() {
         <button className="btn ghost" onClick={reset}><RotateCcw size={16} /> Votación nueva</button>
       </div>
       <div className="sec"><LocalNote /></div>
+      {ficha && <BolicheSheet id={ficha} onClose={() => setFicha(null)} />}
       {sharing && <ShareSheet initial={hoyMessage(hoy, data, location.origin + import.meta.env.BASE_URL, online)} onClose={() => setSharing(false)} />}
     </>
   )
