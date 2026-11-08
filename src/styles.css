@@ -202,3 +202,28 @@ label { display: grid; gap: 6px; } label span { font-size: 13px; color: var(--mu
   .top { padding-left: 12px; padding-right: 12px; } .logo { font-size: 20px; } .me { max-width: 112px; min-width: 0; }
   .tabs { left: 8px; right: 8px; } .tabs a { min-width: 0; font-size: 10px; }
 }
+
+/* ---------- Fase 3: ficha de boliche ---------- */
+.linkish { text-decoration: underline; text-decoration-color: var(--violet); text-underline-offset: 3px; min-height: 32px; }
+.sheet.bol { max-width: 560px; gap: 12px; padding-top: 0; }
+.sheet.bol h3 { font-size: 34px; }
+.sheet.bol h4 { margin-top: 14px; font-size: 15px; color: var(--lav); }
+.bol-cover { position: relative; margin: 0 -22px; height: 200px; background: var(--graphite); border-radius: 28px 28px 0 0; overflow: hidden; flex-shrink: 0; }
+.bol-cover img { width: 100%; height: 100%; object-fit: cover; }
+.bol-cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent 55%, var(--coal)); pointer-events: none; }
+.bol-ph { display: grid; place-items: center; height: 100%; font-family: var(--display); font-weight: 900; font-size: 90px; color: var(--violet); }
+.bol-x { position: absolute; top: 10px; right: 10px; z-index: 1; background: rgba(17, 16, 20, .7); color: var(--paper); border-radius: 50%; }
+.bol-desc { white-space: pre-wrap; }
+.bol-info { padding: 12px 14px; border-radius: 14px; background: var(--black); }
+.bol-info p { white-space: pre-wrap; margin-top: 2px; }
+.bol-ph-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.bol-th { position: relative; aspect-ratio: 1; }
+.bol-th > button:first-child { width: 100%; height: 100%; padding: 0; }
+.bol-th img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; display: block; }
+.bol-th .ib { position: absolute; top: 2px; right: 2px; min-width: 36px; min-height: 36px; background: rgba(17, 16, 20, .7); color: var(--paper); }
+.bol-add { aspect-ratio: 1; border: 1px dashed var(--graphite); border-radius: 12px; display: grid; place-content: center; justify-items: center; gap: 4px; color: var(--muted); cursor: pointer; text-align: center; padding: 6px; }
+.bol-add.on { border-color: var(--lav); color: var(--lav); }
+.bol-big { align-items: center; z-index: 60; padding: 16px; }
+.overlay.over { z-index: 70; } /* confirmaciones arriba de cualquier ficha */
+.bol-big img { max-width: 100%; max-height: 90dvh; border-radius: 14px; }
+@media (min-width: 600px) { .bol-cover { border-radius: 28px 28px 0 0; } }

@@ -46,7 +46,7 @@ export function usePlans(groupId, enabled = true) {
     } catch (e) { const m = planErr(e); await load(); if (alive.current) setErr(m); return false } finally { if (alive.current) setBusy((b) => b - 1) }
   }, [load])
 
-  return { ...st, busy: busy > 0, err, clearErr: () => setErr(''), act, reload: load,
+  return { ...st, gid: groupId, busy: busy > 0, err, clearErr: () => setErr(''), act, reload: load,
     // atajos
     savePlan: (plan, data) => act('tpn_plan_save', { p_group: groupId, p_plan: plan, p_data: data }),
     delPlan: (plan) => act('tpn_plan_delete', { p_plan: plan }),
