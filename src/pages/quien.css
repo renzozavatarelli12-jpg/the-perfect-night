@@ -71,3 +71,12 @@
 }
 @keyframes qq-spark { 0%, 40%, 100% { opacity: 0; transform: translateX(-50%) scale(.3); } 55% { opacity: 1; transform: translateX(-50%) scale(1.3); } }
 @keyframes qq-fall { to { transform: translateY(110dvh) rotate(540deg); } }
+/* Fase 3: partida en el servidor */
+.qq-chip.pick { padding: 8px 14px; border: 1px solid var(--line); background: transparent; min-height: 44px; }
+.qq-chip.pick.on { background: #2a2050; border-color: var(--l); }
+.qq-chip.done { background: rgba(126, 226, 168, .12); color: #7ee2a8; padding: 8px 14px; }
+.qq-guess { display: grid; grid-template-columns: minmax(70px, 30%) 1fr; gap: 10px; align-items: center; }
+.qq-guess span { font-weight: 700; overflow-wrap: anywhere; }
+.qq-hist { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 0; border-top: 1px solid var(--line); color: #d8d1ea; }
+.qq-hist b { color: #fff; }
+.qq-top .row button { font-size: 13px; }

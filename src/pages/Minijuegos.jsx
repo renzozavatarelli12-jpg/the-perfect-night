@@ -1,21 +1,18 @@
 import { Link } from 'react-router-dom'
 import './quien.css'
 import { useStore } from '../store'
+import { GAMES } from '../games'
 
-const GAMES = [
-  ['quien', '🎭', '¿Quién es quién?', 'Respondé como otro del grupo y que adivinen a quién imitás', 'mg-quien'],
-  ['probable', '🍻', '¿Quién es más probable que…?', 'Sale una, el más probable toma', 'mg-prob'],
-]
 
 export default function Minijuegos() {
   const { data } = useStore()
   const last = [...(data.partidas || [])].reverse().slice(0, 5)
   return (
     <>
-      <h1>Minijuegos</h1>
-      <p className="lead">Para la previa. Un solo celu, que vaya pasando de mano en mano.</p>
+      <h1>Previa Games</h1>
+      <p className="lead">Para cuando estamos juntos antes de salir. Alcanza con un celu que vaya pasando de mano en mano.</p>
       <div className="mg-grid">
-        {GAMES.map(([to, icon, title, desc, cls]) => (
+        {GAMES.map(({ to, icon, title, desc, cls }) => (
           <Link key={to} to={to} className={`mg-tile ${cls}`}>
             <span className="mg-icon" aria-hidden="true">{icon}</span>
             <b>{title}</b>
@@ -25,7 +22,7 @@ export default function Minijuegos() {
       </div>
       {last.length > 0 && (
         <section className="sec">
-          <h2>Últimas partidas</h2>
+          <h2>Partidas de antes (en este celu)</h2>
           {last.map((p) => {
             const top = [...p.scores].sort((a, b) => b.pts - a.pts)
             return (
